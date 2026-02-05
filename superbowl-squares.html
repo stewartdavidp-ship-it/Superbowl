@@ -1,0 +1,1411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Super Bowl LX Squares</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0a0a1a;
+            --bg-secondary: #12122a;
+            --bg-tertiary: #1a1a3a;
+            --bg-card: #161630;
+            --text-primary: #e8e6e3;
+            --text-secondary: #9090b0;
+            --text-muted: #5a5a7a;
+            --pats-blue: #002244;
+            --pats-red: #C60C30;
+            --pats-silver: #B0B7BC;
+            --pats-header: #002244;
+            --hawks-blue: #002244;
+            --hawks-green: #69BE28;
+            --hawks-gray: #A5ACAF;
+            --hawks-header: #002244;
+            --gold: #FFB612;
+            --gold-dim: #b8860b;
+            --success: #22c55e;
+            --danger: #ef4444;
+            --info: #3b82f6;
+            --accent: #667eea;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background:
+                radial-gradient(ellipse at 20% 50%, rgba(0, 34, 68, 0.2) 0%, transparent 60%),
+                radial-gradient(ellipse at 80% 50%, rgba(105, 190, 40, 0.1) 0%, transparent 60%),
+                radial-gradient(ellipse at 50% 0%, rgba(255, 182, 18, 0.06) 0%, transparent 40%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .app-container {
+            position: relative;
+            z-index: 1;
+            max-width: 820px;
+            margin: 0 auto;
+            padding: 12px;
+            padding-bottom: 40px;
+        }
+
+        /* ── Header ── */
+        .header {
+            text-align: center;
+            padding: 16px 0 12px;
+        }
+
+        .header h1 {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 2.2rem;
+            letter-spacing: 3px;
+            background: linear-gradient(135deg, var(--gold), #fff8dc, var(--gold));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1;
+        }
+
+        .header .subtitle {
+            font-size: 0.78rem;
+            color: var(--text-secondary);
+            margin-top: 2px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .header .matchup {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 14px;
+            margin-top: 10px;
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.4rem;
+            letter-spacing: 2px;
+        }
+
+        .team-pats { color: var(--pats-silver); }
+        .team-hawks { color: var(--hawks-green); }
+        .vs-text { color: var(--text-muted); font-size: 0.9rem; }
+
+        .user-bar {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 10px;
+            font-size: 0.82rem;
+            color: var(--text-secondary);
+        }
+
+        .user-bar img {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+        }
+
+        .user-bar button {
+            background: none;
+            border: 1px solid rgba(255,255,255,0.15);
+            color: var(--text-secondary);
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.72rem;
+            cursor: pointer;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        /* ── Auth ── */
+        .auth-section {
+            text-align: center;
+            padding: 80px 20px;
+        }
+
+        .auth-section h2 {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.8rem;
+            letter-spacing: 2px;
+            margin-bottom: 8px;
+        }
+
+        .auth-section p {
+            color: var(--text-secondary);
+            margin-bottom: 28px;
+            font-size: 0.9rem;
+        }
+
+        .google-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            background: white;
+            color: #333;
+            border: none;
+            border-radius: 8px;
+            padding: 14px 32px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.15s, box-shadow 0.15s;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .google-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255,255,255,0.12);
+        }
+
+        .google-btn svg { width: 20px; height: 20px; }
+
+        /* ── Tabs ── */
+        .tab-nav {
+            display: flex;
+            background: var(--bg-secondary);
+            border-radius: 10px;
+            padding: 3px;
+            margin-bottom: 16px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 10px 6px;
+            border: none;
+            background: transparent;
+            color: var(--text-secondary);
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.82rem;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+
+        .tab-btn.active {
+            background: var(--bg-tertiary);
+            color: var(--gold);
+        }
+
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        /* ── Setup Overlay ── */
+        .overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.82);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            animation: fadeIn 0.2s;
+        }
+
+        .overlay-card {
+            background: var(--bg-secondary);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 16px;
+            padding: 28px;
+            width: 92%;
+            max-width: 380px;
+            animation: slideUp 0.3s ease-out;
+        }
+
+        .overlay-card h2 {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.5rem;
+            letter-spacing: 2px;
+            margin-bottom: 4px;
+            color: var(--gold);
+        }
+
+        .overlay-card .sub {
+            color: var(--text-secondary);
+            font-size: 0.82rem;
+            margin-bottom: 18px;
+        }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideUp { from { transform: translateY(40px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+        .form-group { margin-bottom: 14px; }
+
+        .form-group label {
+            display: block;
+            color: var(--text-secondary);
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 11px 12px;
+            background: var(--bg-tertiary);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-family: 'Outfit', sans-serif;
+            font-size: 1rem;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: var(--gold);
+        }
+
+        .form-group .helper {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            margin-top: 3px;
+        }
+
+        .form-group .error-text {
+            font-size: 0.72rem;
+            color: var(--danger);
+            margin-top: 3px;
+            display: none;
+        }
+
+        .btn-gold {
+            background: linear-gradient(135deg, var(--gold), var(--gold-dim));
+            color: #1a1a1a;
+            border: none;
+            border-radius: 8px;
+            padding: 13px 24px;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 700;
+            font-size: 0.95rem;
+            cursor: pointer;
+            width: 100%;
+            transition: transform 0.1s, box-shadow 0.1s;
+            margin-top: 4px;
+        }
+
+        .btn-gold:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 16px rgba(255,182,18,0.3);
+        }
+
+        .btn-gold:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+        /* ── Grid ── */
+        .grid-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            font-size: 0.82rem;
+            color: var(--text-secondary);
+        }
+
+        .grid-info .boxes-left { color: var(--gold); font-weight: 600; }
+
+        .grid-container {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            padding-bottom: 6px;
+        }
+
+        .team-label-top {
+            text-align: center;
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1rem;
+            letter-spacing: 3px;
+            color: var(--pats-silver);
+            margin-bottom: 4px;
+            margin-left: 44px;
+        }
+
+        .grid-outer {
+            position: relative;
+            display: inline-flex;
+            min-width: 100%;
+        }
+
+        .team-label-side {
+            writing-mode: vertical-lr;
+            transform: rotate(180deg);
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1rem;
+            letter-spacing: 3px;
+            color: var(--hawks-green);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding-right: 4px;
+            min-width: 22px;
+        }
+
+        .squares-grid {
+            border-collapse: collapse;
+            flex: 1;
+        }
+
+        .squares-grid th, .squares-grid td {
+            width: 44px;
+            height: 38px;
+            text-align: center;
+            vertical-align: middle;
+            font-size: 0.72rem;
+        }
+
+        .squares-grid .corner-cell {
+            background: var(--bg-tertiary);
+            border-radius: 6px 0 0 0;
+        }
+
+        .squares-grid .col-header {
+            background: var(--pats-blue);
+            color: var(--pats-silver);
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 0.95rem;
+            letter-spacing: 1px;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .squares-grid .col-header.has-number {
+            color: white;
+        }
+
+        .squares-grid .row-header {
+            background: #0a3d0a;
+            color: var(--hawks-green);
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 0.95rem;
+            letter-spacing: 1px;
+            border: 1px solid rgba(255,255,255,0.05);
+            padding: 0 6px;
+        }
+
+        .squares-grid .row-header.has-number {
+            color: white;
+        }
+
+        .squares-grid td.cell {
+            border: 1px solid rgba(255,255,255,0.06);
+            cursor: default;
+            transition: background 0.15s;
+            font-weight: 700;
+            position: relative;
+        }
+
+        .squares-grid td.cell.empty { background: var(--bg-card); }
+
+        .squares-grid td.cell.taken {
+            background: var(--bg-tertiary);
+            color: var(--text-secondary);
+        }
+
+        .squares-grid td.cell.mine {
+            background: rgba(102, 126, 234, 0.25);
+            color: #8ea8ff;
+            border-color: rgba(102, 126, 234, 0.2);
+        }
+
+        .squares-grid td.cell.winner-cell {
+            background: rgba(255, 182, 18, 0.3) !important;
+            color: var(--gold) !important;
+            animation: winPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes winPulse {
+            0%, 100% { box-shadow: inset 0 0 0 0 rgba(255,182,18,0); }
+            50% { box-shadow: inset 0 0 6px 2px rgba(255,182,18,0.2); }
+        }
+
+        /* ── Players Tab ── */
+        .scores-card {
+            background: var(--bg-secondary);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+
+        .scores-card h3 {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.1rem;
+            letter-spacing: 2px;
+            color: var(--gold);
+            margin-bottom: 10px;
+        }
+
+        .quarter-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+        }
+
+        @media (min-width: 560px) { .quarter-grid { grid-template-columns: repeat(4, 1fr); } }
+
+        .q-card {
+            background: var(--bg-tertiary);
+            border-radius: 8px;
+            padding: 10px 8px;
+            text-align: center;
+        }
+
+        .q-card .q-label {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 0.95rem;
+            letter-spacing: 1px;
+            color: var(--text-secondary);
+        }
+
+        .q-card .q-score {
+            font-size: 0.8rem;
+            color: var(--text-primary);
+            margin: 3px 0;
+            font-weight: 600;
+        }
+
+        .q-card .q-box {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+        }
+
+        .q-card .q-winner {
+            font-size: 0.75rem;
+            color: var(--gold);
+            font-weight: 600;
+            margin-top: 2px;
+        }
+
+        .q-card .q-winner.none { color: var(--text-muted); font-weight: 400; }
+
+        .q-card .q-prize { font-size: 0.68rem; color: var(--success); }
+
+        /* Player table */
+        .player-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.82rem;
+        }
+
+        .player-table th {
+            text-align: left;
+            padding: 8px 10px;
+            color: var(--text-muted);
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+        }
+
+        .player-table td {
+            padding: 10px;
+            border-bottom: 1px solid rgba(255,255,255,0.04);
+            color: var(--text-primary);
+        }
+
+        .player-table tr.is-me td {
+            color: #8ea8ff;
+        }
+
+        .player-table .initials-badge {
+            display: inline-block;
+            background: var(--bg-tertiary);
+            border-radius: 4px;
+            padding: 2px 8px;
+            font-weight: 700;
+            font-size: 0.78rem;
+            letter-spacing: 1px;
+        }
+
+        .player-table .winnings { color: var(--success); font-weight: 600; }
+        .player-table .winnings.zero { color: var(--text-muted); font-weight: 400; }
+
+        /* ── Admin Tab ── */
+        .admin-section { margin-bottom: 20px; }
+
+        .admin-section h3 {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.1rem;
+            letter-spacing: 2px;
+            color: var(--gold);
+            margin-bottom: 10px;
+        }
+
+        .admin-card {
+            background: var(--bg-secondary);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+        }
+
+        .admin-card p {
+            color: var(--text-secondary);
+            font-size: 0.82rem;
+            margin-bottom: 12px;
+        }
+
+        .btn-admin {
+            background: linear-gradient(135deg, var(--accent), #764ba2);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 11px 20px;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 600;
+            font-size: 0.88rem;
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
+
+        .btn-admin:hover { transform: translateY(-1px); }
+        .btn-admin:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 11px 20px;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 600;
+            font-size: 0.88rem;
+            cursor: pointer;
+        }
+
+        .score-inputs {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        @media (min-width: 560px) { .score-inputs { grid-template-columns: repeat(4, 1fr); } }
+
+        .score-input-group label {
+            display: block;
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 4px;
+        }
+
+        .score-input-group .score-pair {
+            display: flex;
+            gap: 4px;
+        }
+
+        .score-input-group input {
+            width: 100%;
+            padding: 8px 6px;
+            background: var(--bg-tertiary);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 6px;
+            color: var(--text-primary);
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.85rem;
+            text-align: center;
+        }
+
+        .score-input-group input:focus {
+            outline: none;
+            border-color: var(--gold);
+        }
+
+        .score-input-group .team-label {
+            font-size: 0.6rem;
+            color: var(--text-muted);
+            text-align: center;
+            margin-top: 2px;
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 60px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            padding: 12px 24px;
+            border-radius: 8px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+            z-index: 10000;
+            animation: fadeIn 0.2s;
+            font-size: 0.88rem;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        /* Spinner */
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--bg-tertiary);
+            border-top-color: var(--gold);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            display: inline-block;
+            vertical-align: middle;
+            margin-right: 6px;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .hidden { display: none !important; }
+
+        .not-admin-msg {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-muted);
+        }
+
+        .numbers-preview {
+            display: flex;
+            gap: 4px;
+            flex-wrap: wrap;
+            margin-top: 8px;
+        }
+
+        .num-chip {
+            background: var(--bg-tertiary);
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 0.78rem;
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+
+        .admin-btn-row {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        @media (max-width: 500px) {
+            .squares-grid th, .squares-grid td {
+                width: 36px;
+                height: 34px;
+                font-size: 0.65rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <div class="header">
+            <h1>Super Bowl LX Squares</h1>
+            <div class="subtitle">February 8, 2026 &bull; Levi's Stadium</div>
+            <div class="matchup">
+                <span class="team-pats">PATRIOTS</span>
+                <span class="vs-text">vs</span>
+                <span class="team-hawks">SEAHAWKS</span>
+            </div>
+            <div class="user-bar hidden" id="userBar">
+                <img id="userPhoto" src="" alt="">
+                <span id="userName"></span>
+                <button onclick="signOut()">Sign Out</button>
+            </div>
+        </div>
+
+        <!-- Auth Screen -->
+        <div id="authScreen" class="auth-section">
+            <h2>Join the Grid</h2>
+            <p>Sign in with Google to claim your squares.<br>$1 per box &bull; $25 per quarter</p>
+            <button class="google-btn" onclick="signIn()">
+                <svg viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+                Sign in with Google
+            </button>
+        </div>
+
+        <!-- Main App (hidden until auth) -->
+        <div id="mainApp" class="hidden">
+            <div class="tab-nav">
+                <button class="tab-btn active" onclick="switchTab('grid')">Grid</button>
+                <button class="tab-btn" onclick="switchTab('players')">Players</button>
+                <button class="tab-btn" onclick="switchTab('admin')" id="adminTabBtn" style="display:none;">Admin</button>
+            </div>
+
+            <!-- Grid Tab -->
+            <div id="tab-grid" class="tab-content active">
+                <div class="grid-info">
+                    <span>Boxes claimed: <strong id="claimedCount">0</strong>/100</span>
+                    <span class="boxes-left" id="boxesLeftText">100 remaining</span>
+                </div>
+                <div class="grid-container">
+                    <div class="team-label-top">← PATRIOTS →</div>
+                    <div class="grid-outer">
+                        <div class="team-label-side">← SEAHAWKS →</div>
+                        <table class="squares-grid" id="squaresGrid">
+                            <!-- Built by JS -->
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Players Tab -->
+            <div id="tab-players" class="tab-content">
+                <div class="scores-card">
+                    <h3>Quarter Results</h3>
+                    <div class="quarter-grid" id="quarterResults">
+                        <!-- Built by JS -->
+                    </div>
+                </div>
+                <div class="scores-card">
+                    <h3>Players</h3>
+                    <table class="player-table" id="playerTable">
+                        <thead>
+                            <tr>
+                                <th>Player</th>
+                                <th>Initials</th>
+                                <th>Boxes</th>
+                                <th>Cost</th>
+                                <th>Winnings</th>
+                            </tr>
+                        </thead>
+                        <tbody id="playerTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Admin Tab -->
+            <div id="tab-admin" class="tab-content">
+                <div id="adminContent">
+                    <!-- Numbers Section -->
+                    <div class="admin-card">
+                        <h3>Grid Numbers</h3>
+                        <p id="numbersStatus">Numbers have not been assigned yet. All 100 boxes must be filled first.</p>
+                        <div id="numbersPreview" class="hidden">
+                            <div style="margin-bottom:6px; font-size:0.78rem; color:var(--text-secondary);">Patriots (columns):</div>
+                            <div class="numbers-preview" id="colNumbersPreview"></div>
+                            <div style="margin:8px 0 6px; font-size:0.78rem; color:var(--text-secondary);">Seahawks (rows):</div>
+                            <div class="numbers-preview" id="rowNumbersPreview"></div>
+                        </div>
+                        <div class="admin-btn-row" style="margin-top:12px;">
+                            <button class="btn-admin" id="assignNumbersBtn" onclick="assignNumbers()">Assign Random Numbers</button>
+                            <button class="btn-danger hidden" id="clearNumbersBtn" onclick="clearNumbers()">Clear Numbers</button>
+                        </div>
+                    </div>
+
+                    <!-- Scores Section -->
+                    <div class="admin-card">
+                        <h3>Enter Scores</h3>
+                        <p>Enter the score at the end of each quarter. Winners are auto-calculated from the last digit of each team's score.</p>
+                        <div class="score-inputs" id="scoreInputs">
+                            <!-- Built by JS -->
+                        </div>
+                        <button class="btn-admin" onclick="saveScores()">Save Scores</button>
+                    </div>
+
+                    <!-- Reset Section -->
+                    <div class="admin-card">
+                        <h3>Danger Zone</h3>
+                        <div class="admin-btn-row">
+                            <button class="btn-danger" onclick="resetGrid()">Reset Entire Grid</button>
+                        </div>
+                    </div>
+                </div>
+                <div id="notAdminMsg" class="not-admin-msg hidden">
+                    <p>Only the admin can access this tab.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Setup Overlay -->
+    <div id="setupOverlay" class="overlay hidden">
+        <div class="overlay-card">
+            <h2>Claim Your Squares</h2>
+            <div class="sub">Choose your initials and how many boxes you want.</div>
+            <div class="form-group">
+                <label>Your Initials (2-3 characters)</label>
+                <input type="text" id="initialsInput" maxlength="3" placeholder="e.g. DS"
+                    style="text-transform: uppercase; letter-spacing: 2px; font-weight: 700;">
+                <div class="error-text" id="initialsError">These initials are already taken</div>
+            </div>
+            <div class="form-group">
+                <label>Number of Boxes</label>
+                <select id="boxCountSelect"></select>
+                <div class="helper">$1 per box &bull; <span id="costPreview">$0</span> total</div>
+            </div>
+            <button class="btn-gold" id="claimBtn" onclick="claimBoxes()">Claim Boxes</button>
+        </div>
+    </div>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+    <script>
+        // ── Firebase Init ──
+        const firebaseConfig = {
+            apiKey: "AIzaSyBQVwn8vOrFTzLlm2MYIPBwgZV2xR9AuhM",
+            authDomain: "word-boxing.firebaseapp.com",
+            databaseURL: "https://word-boxing-default-rtdb.firebaseio.com",
+            projectId: "word-boxing",
+            storageBucket: "word-boxing.appspot.com",
+            messagingSenderId: "932356027174",
+            appId: "1:932356027174:web:0c1c9eeeca785cb49a0d8f"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.database();
+
+        // ── ADMIN UID – set this to YOUR Google UID after first login ──
+        // Check the browser console after signing in – it logs your UID
+        let ADMIN_UID = '';
+
+        // ── State ──
+        let currentUser = null;
+        let gridData = {};     // { "r_c": { uid, initials, name } }
+        let playersData = {};  // { uid: { name, initials, boxCount, email } }
+        let colNumbers = null; // array of 10 numbers (0-9 shuffled)
+        let rowNumbers = null;
+        let scores = { q1: null, q2: null, q3: null, q4: null };
+        let numbersAssigned = false;
+
+        const GAME_REF = 'sb-squares-lx';
+
+        // ── Auth ──
+        function signIn() {
+            const provider = new firebase.auth.GoogleAuthProvider();
+            auth.signInWithPopup(provider).catch(e => {
+                showToast('Sign-in failed: ' + e.message);
+            });
+        }
+
+        function signOut() {
+            auth.signOut();
+        }
+
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                currentUser = user;
+                console.log('Your UID:', user.uid, '– set ADMIN_UID to this value to enable admin');
+                document.getElementById('authScreen').classList.add('hidden');
+                document.getElementById('mainApp').classList.remove('hidden');
+                document.getElementById('userBar').classList.remove('hidden');
+                document.getElementById('userName').textContent = user.displayName || user.email;
+                document.getElementById('userPhoto').src = user.photoURL || '';
+                initApp();
+            } else {
+                currentUser = null;
+                document.getElementById('authScreen').classList.remove('hidden');
+                document.getElementById('mainApp').classList.add('hidden');
+                document.getElementById('userBar').classList.add('hidden');
+            }
+        });
+
+        // ── Init ──
+        function initApp() {
+            buildScoreInputs();
+            loadAdminUID();
+            listenToData();
+        }
+
+        function loadAdminUID() {
+            db.ref(`${GAME_REF}/admin`).once('value').then(snap => {
+                const val = snap.val();
+                if (val) {
+                    ADMIN_UID = val;
+                } else {
+                    // First person to sign in becomes admin
+                    ADMIN_UID = currentUser.uid;
+                    db.ref(`${GAME_REF}/admin`).set(currentUser.uid);
+                    showToast('You are the admin!');
+                }
+                updateAdminUI();
+            });
+        }
+
+        function updateAdminUI() {
+            const isAdmin = currentUser && currentUser.uid === ADMIN_UID;
+            document.getElementById('adminTabBtn').style.display = isAdmin ? '' : 'none';
+        }
+
+        // ── Real-time Listeners ──
+        function listenToData() {
+            // Grid cells
+            db.ref(`${GAME_REF}/grid`).on('value', snap => {
+                gridData = snap.val() || {};
+                renderGrid();
+                updateGridInfo();
+            });
+
+            // Players
+            db.ref(`${GAME_REF}/players`).on('value', snap => {
+                playersData = snap.val() || {};
+                checkIfNeedsSetup();
+                renderPlayers();
+            });
+
+            // Numbers
+            db.ref(`${GAME_REF}/numbers`).on('value', snap => {
+                const val = snap.val();
+                if (val) {
+                    colNumbers = val.cols;
+                    rowNumbers = val.rows;
+                    numbersAssigned = true;
+                } else {
+                    colNumbers = null;
+                    rowNumbers = null;
+                    numbersAssigned = false;
+                }
+                renderGrid();
+                updateNumbersUI();
+                renderQuarterResults();
+            });
+
+            // Scores
+            db.ref(`${GAME_REF}/scores`).on('value', snap => {
+                scores = snap.val() || { q1: null, q2: null, q3: null, q4: null };
+                renderQuarterResults();
+                renderPlayers();
+                renderGrid();
+                populateScoreInputs();
+            });
+        }
+
+        // ── Setup Check ──
+        function checkIfNeedsSetup() {
+            if (!currentUser) return;
+            const myData = playersData[currentUser.uid];
+            if (!myData) {
+                // Show setup overlay
+                buildBoxCountSelect();
+                document.getElementById('setupOverlay').classList.remove('hidden');
+            } else {
+                document.getElementById('setupOverlay').classList.add('hidden');
+            }
+        }
+
+        function buildBoxCountSelect() {
+            const claimed = Object.keys(gridData).length;
+            const available = Math.min(10, 100 - claimed);
+            const sel = document.getElementById('boxCountSelect');
+            sel.innerHTML = '';
+            for (let i = 1; i <= available; i++) {
+                const opt = document.createElement('option');
+                opt.value = i;
+                opt.textContent = i;
+                sel.appendChild(opt);
+            }
+            sel.value = Math.min(5, available);
+            updateCostPreview();
+            sel.onchange = updateCostPreview;
+        }
+
+        function updateCostPreview() {
+            const n = parseInt(document.getElementById('boxCountSelect').value) || 0;
+            document.getElementById('costPreview').textContent = '$' + n;
+        }
+
+        // ── Claim Boxes ──
+        async function claimBoxes() {
+            const initialsRaw = document.getElementById('initialsInput').value.trim().toUpperCase();
+            const boxCount = parseInt(document.getElementById('boxCountSelect').value);
+            const errEl = document.getElementById('initialsError');
+            errEl.style.display = 'none';
+
+            // Validate initials
+            if (initialsRaw.length < 2 || initialsRaw.length > 3) {
+                errEl.textContent = 'Enter 2-3 characters';
+                errEl.style.display = 'block';
+                return;
+            }
+
+            if (!/^[A-Z]+$/.test(initialsRaw)) {
+                errEl.textContent = 'Letters only';
+                errEl.style.display = 'block';
+                return;
+            }
+
+            // Check uniqueness
+            for (const uid in playersData) {
+                if (playersData[uid].initials === initialsRaw) {
+                    errEl.textContent = 'These initials are already taken. Try different ones.';
+                    errEl.style.display = 'block';
+                    return;
+                }
+            }
+
+            // Find available cells
+            const available = [];
+            for (let r = 0; r < 10; r++) {
+                for (let c = 0; c < 10; c++) {
+                    const key = `${r}_${c}`;
+                    if (!gridData[key]) available.push(key);
+                }
+            }
+
+            if (available.length < boxCount) {
+                showToast('Not enough boxes available!');
+                return;
+            }
+
+            // Randomly select
+            const shuffled = available.sort(() => Math.random() - 0.5);
+            const selected = shuffled.slice(0, boxCount);
+
+            const claimBtn = document.getElementById('claimBtn');
+            claimBtn.disabled = true;
+            claimBtn.innerHTML = '<span class="spinner"></span> Claiming...';
+
+            try {
+                const updates = {};
+
+                // Save player info
+                updates[`${GAME_REF}/players/${currentUser.uid}`] = {
+                    name: currentUser.displayName || currentUser.email,
+                    initials: initialsRaw,
+                    boxCount: boxCount,
+                    email: currentUser.email
+                };
+
+                // Save grid cells
+                for (const key of selected) {
+                    updates[`${GAME_REF}/grid/${key}`] = {
+                        uid: currentUser.uid,
+                        initials: initialsRaw,
+                        name: currentUser.displayName || currentUser.email
+                    };
+                }
+
+                await db.ref().update(updates);
+                document.getElementById('setupOverlay').classList.add('hidden');
+                showToast(`Claimed ${boxCount} boxes!`);
+            } catch (e) {
+                showToast('Error: ' + e.message);
+            } finally {
+                claimBtn.disabled = false;
+                claimBtn.textContent = 'Claim Boxes';
+            }
+        }
+
+        // ── Grid Rendering ──
+        function renderGrid() {
+            const table = document.getElementById('squaresGrid');
+            const winnerCells = getWinnerCells();
+
+            let html = '<tr><th class="corner-cell"></th>';
+            for (let c = 0; c < 10; c++) {
+                const num = colNumbers ? colNumbers[c] : '';
+                const cls = colNumbers ? 'col-header has-number' : 'col-header';
+                html += `<th class="${cls}">${num !== '' ? num : '?'}</th>`;
+            }
+            html += '</tr>';
+
+            for (let r = 0; r < 10; r++) {
+                const num = rowNumbers ? rowNumbers[r] : '';
+                const cls = rowNumbers ? 'row-header has-number' : 'row-header';
+                html += `<tr><th class="${cls}">${num !== '' ? num : '?'}</th>`;
+                for (let c = 0; c < 10; c++) {
+                    const key = `${r}_${c}`;
+                    const cellData = gridData[key];
+                    const isWinner = winnerCells.includes(key);
+
+                    if (cellData) {
+                        const isMine = currentUser && cellData.uid === currentUser.uid;
+                        let cellClass = 'cell taken';
+                        if (isMine) cellClass = 'cell mine';
+                        if (isWinner) cellClass += ' winner-cell';
+                        html += `<td class="${cellClass}" title="${escapeHtml(cellData.name)}">${escapeHtml(cellData.initials)}</td>`;
+                    } else {
+                        html += `<td class="cell empty"></td>`;
+                    }
+                }
+                html += '</tr>';
+            }
+            table.innerHTML = html;
+        }
+
+        function getWinnerCells() {
+            if (!numbersAssigned) return [];
+            const cells = [];
+            const quarters = ['q1', 'q2', 'q3', 'q4'];
+            for (const q of quarters) {
+                const s = scores[q];
+                if (s && s.pats !== undefined && s.hawks !== undefined) {
+                    const patsDigit = s.pats % 10;
+                    const hawksDigit = s.hawks % 10;
+                    // Find col index with patsDigit, row index with hawksDigit
+                    const colIdx = colNumbers.indexOf(patsDigit);
+                    const rowIdx = rowNumbers.indexOf(hawksDigit);
+                    if (colIdx !== -1 && rowIdx !== -1) {
+                        cells.push(`${rowIdx}_${colIdx}`);
+                    }
+                }
+            }
+            return cells;
+        }
+
+        function updateGridInfo() {
+            const claimed = Object.keys(gridData).length;
+            document.getElementById('claimedCount').textContent = claimed;
+            const remaining = 100 - claimed;
+            document.getElementById('boxesLeftText').textContent = remaining > 0 ? `${remaining} remaining` : 'GRID FULL';
+        }
+
+        // ── Numbers ──
+        function updateNumbersUI() {
+            const statusEl = document.getElementById('numbersStatus');
+            const previewEl = document.getElementById('numbersPreview');
+            const assignBtn = document.getElementById('assignNumbersBtn');
+            const clearBtn = document.getElementById('clearNumbersBtn');
+
+            if (numbersAssigned) {
+                statusEl.textContent = 'Numbers have been assigned!';
+                previewEl.classList.remove('hidden');
+                document.getElementById('colNumbersPreview').innerHTML = colNumbers.map(n =>
+                    `<span class="num-chip">${n}</span>`).join('');
+                document.getElementById('rowNumbersPreview').innerHTML = rowNumbers.map(n =>
+                    `<span class="num-chip">${n}</span>`).join('');
+                assignBtn.classList.add('hidden');
+                clearBtn.classList.remove('hidden');
+            } else {
+                const claimed = Object.keys(gridData).length;
+                if (claimed < 100) {
+                    statusEl.textContent = `Numbers can be assigned once all 100 boxes are filled. (${claimed}/100 claimed)`;
+                    assignBtn.disabled = true;
+                } else {
+                    statusEl.textContent = 'All boxes are filled! Ready to assign numbers.';
+                    assignBtn.disabled = false;
+                }
+                previewEl.classList.add('hidden');
+                assignBtn.classList.remove('hidden');
+                clearBtn.classList.add('hidden');
+            }
+        }
+
+        async function assignNumbers() {
+            if (!confirm('Assign random numbers to the grid? This determines all potential winners.')) return;
+            const cols = shuffle([0,1,2,3,4,5,6,7,8,9]);
+            const rows = shuffle([0,1,2,3,4,5,6,7,8,9]);
+            await db.ref(`${GAME_REF}/numbers`).set({ cols, rows });
+            showToast('Numbers assigned!');
+        }
+
+        async function clearNumbers() {
+            if (!confirm('Clear all numbers? You can reassign later.')) return;
+            await db.ref(`${GAME_REF}/numbers`).remove();
+            showToast('Numbers cleared');
+        }
+
+        function shuffle(arr) {
+            const a = [...arr];
+            for (let i = a.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [a[i], a[j]] = [a[j], a[i]];
+            }
+            return a;
+        }
+
+        // ── Scores ──
+        function buildScoreInputs() {
+            const container = document.getElementById('scoreInputs');
+            const quarters = ['Q1', 'Q2', 'Q3', 'Q4'];
+            container.innerHTML = quarters.map((q, i) => `
+                <div class="score-input-group">
+                    <label>${q}</label>
+                    <div class="score-pair">
+                        <div>
+                            <input type="number" min="0" id="score_pats_${i}" placeholder="0">
+                            <div class="team-label">PAT</div>
+                        </div>
+                        <div>
+                            <input type="number" min="0" id="score_hawks_${i}" placeholder="0">
+                            <div class="team-label">SEA</div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function populateScoreInputs() {
+            const quarters = ['q1', 'q2', 'q3', 'q4'];
+            quarters.forEach((q, i) => {
+                const s = scores[q];
+                const patsInput = document.getElementById(`score_pats_${i}`);
+                const hawksInput = document.getElementById(`score_hawks_${i}`);
+                if (patsInput && hawksInput) {
+                    patsInput.value = s && s.pats !== undefined ? s.pats : '';
+                    hawksInput.value = s && s.hawks !== undefined ? s.hawks : '';
+                }
+            });
+        }
+
+        async function saveScores() {
+            const quarters = ['q1', 'q2', 'q3', 'q4'];
+            const newScores = {};
+            quarters.forEach((q, i) => {
+                const p = document.getElementById(`score_pats_${i}`).value;
+                const h = document.getElementById(`score_hawks_${i}`).value;
+                if (p !== '' && h !== '') {
+                    newScores[q] = { pats: parseInt(p), hawks: parseInt(h) };
+                } else {
+                    newScores[q] = null;
+                }
+            });
+            await db.ref(`${GAME_REF}/scores`).set(newScores);
+            showToast('Scores saved!');
+        }
+
+        // ── Quarter Results ──
+        function renderQuarterResults() {
+            const container = document.getElementById('quarterResults');
+            const quarters = [
+                { key: 'q1', label: 'Q1' },
+                { key: 'q2', label: 'Q2' },
+                { key: 'q3', label: 'Q3' },
+                { key: 'q4', label: 'Q4' }
+            ];
+
+            container.innerHTML = quarters.map(q => {
+                const s = scores[q.key];
+                let scoreText = '—';
+                let boxText = '';
+                let winnerText = 'TBD';
+                let winnerClass = 'none';
+                let prizeText = '$25';
+
+                if (s && s.pats !== undefined) {
+                    scoreText = `PAT ${s.pats} – SEA ${s.hawks}`;
+                    if (numbersAssigned) {
+                        const patsDigit = s.pats % 10;
+                        const hawksDigit = s.hawks % 10;
+                        boxText = `Box: ${patsDigit}, ${hawksDigit}`;
+                        const colIdx = colNumbers.indexOf(patsDigit);
+                        const rowIdx = rowNumbers.indexOf(hawksDigit);
+                        const cellKey = `${rowIdx}_${colIdx}`;
+                        const cellData = gridData[cellKey];
+                        if (cellData) {
+                            winnerText = `${escapeHtml(cellData.initials)} – ${escapeHtml(cellData.name.split(' ')[0])}`;
+                            winnerClass = '';
+                        } else {
+                            winnerText = 'No one';
+                        }
+                    }
+                } else if (!numbersAssigned) {
+                    winnerText = 'Numbers not set';
+                }
+
+                return `
+                    <div class="q-card">
+                        <div class="q-label">${q.label}</div>
+                        <div class="q-score">${scoreText}</div>
+                        <div class="q-box">${boxText}</div>
+                        <div class="q-winner ${winnerClass}">${winnerText}</div>
+                        <div class="q-prize">${prizeText}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // ── Players Table ──
+        function renderPlayers() {
+            const tbody = document.getElementById('playerTableBody');
+            const playerList = Object.entries(playersData).map(([uid, data]) => ({
+                uid,
+                name: data.name,
+                initials: data.initials,
+                boxCount: data.boxCount,
+                winnings: calculateWinnings(uid)
+            }));
+
+            // Sort by box count desc
+            playerList.sort((a, b) => b.boxCount - a.boxCount);
+
+            tbody.innerHTML = playerList.map(p => {
+                const isMe = currentUser && p.uid === currentUser.uid;
+                return `
+                    <tr class="${isMe ? 'is-me' : ''}">
+                        <td>${escapeHtml(p.name.split(' ')[0])}${isMe ? ' (you)' : ''}</td>
+                        <td><span class="initials-badge">${escapeHtml(p.initials)}</span></td>
+                        <td>${p.boxCount}</td>
+                        <td>$${p.boxCount}</td>
+                        <td class="winnings ${p.winnings === 0 ? 'zero' : ''}">$${p.winnings}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function calculateWinnings(uid) {
+            if (!numbersAssigned) return 0;
+            let total = 0;
+            const quarters = ['q1', 'q2', 'q3', 'q4'];
+            for (const q of quarters) {
+                const s = scores[q];
+                if (s && s.pats !== undefined) {
+                    const patsDigit = s.pats % 10;
+                    const hawksDigit = s.hawks % 10;
+                    const colIdx = colNumbers.indexOf(patsDigit);
+                    const rowIdx = rowNumbers.indexOf(hawksDigit);
+                    const cellKey = `${rowIdx}_${colIdx}`;
+                    const cellData = gridData[cellKey];
+                    if (cellData && cellData.uid === uid) {
+                        total += 25;
+                    }
+                }
+            }
+            return total;
+        }
+
+        // ── Admin: Reset Grid ──
+        async function resetGrid() {
+            if (!confirm('This will delete ALL squares, players, numbers, and scores. Are you sure?')) return;
+            if (!confirm('REALLY sure? This cannot be undone.')) return;
+            await db.ref(`${GAME_REF}/grid`).remove();
+            await db.ref(`${GAME_REF}/players`).remove();
+            await db.ref(`${GAME_REF}/numbers`).remove();
+            await db.ref(`${GAME_REF}/scores`).remove();
+            showToast('Grid has been reset');
+        }
+
+        // ── Tabs ──
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelector(`[onclick="switchTab('${tab}')"]`).classList.add('active');
+            document.getElementById(`tab-${tab}`).classList.add('active');
+
+            if (tab === 'players') {
+                renderQuarterResults();
+                renderPlayers();
+            }
+            if (tab === 'admin') updateNumbersUI();
+        }
+
+        // ── Utility ──
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function showToast(msg, duration = 3000) {
+            const existing = document.querySelector('.toast');
+            if (existing) existing.remove();
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.textContent = msg;
+            document.body.appendChild(toast);
+            setTimeout(() => {
+                toast.style.animation = 'fadeIn 0.2s reverse';
+                setTimeout(() => toast.remove(), 200);
+            }, duration);
+        }
+    </script>
+</body>
+</html>
