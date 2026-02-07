@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Super Bowl LX Squares</title>
-    <meta name="version" content="6.2.2">
+    <meta name="version" content="6.2.3">
     <meta name="gs-app-id" content="sb-squares">
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -920,7 +920,14 @@
     // ══════════════════════════════════════════════════
     //  AUTH
     // ══════════════════════════════════════════════════
-    function signIn() { auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()).catch(e => showToast('Sign-in failed: ' + e.message)); }
+    const googleProvider = new firebase.auth.GoogleAuthProvider();
+    function signIn() {
+        auth.signInWithPopup(googleProvider).catch(e => {
+            // Popup blocked or storage-partitioned browser — fall back to redirect
+            console.log('Popup failed, trying redirect:', e.code);
+            auth.signInWithRedirect(googleProvider);
+        });
+    }
     function signOut() { detachGameListeners(); currentGameId = null; myGames = {}; auth.signOut(); }
 
     // ══════════════════════════════════════════════════
@@ -1040,6 +1047,11 @@
         console.log(`[MIGRATION] ${Object.keys(legacyGrid).length} grid cells, ${Object.keys(legacyPlayers).length} players migrated`);
         showToast(`Grid migrated to multi-game! Code: ${code}`);
     }
+
+    // Handle redirect result (for browsers that can't use popup)
+    auth.getRedirectResult().catch(e => {
+        if (e.code !== 'auth/no-auth-event') console.error('Redirect sign-in error:', e);
+    });
 
     auth.onAuthStateChanged(async user => {
         if (user) {
