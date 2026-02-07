@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Super Bowl LX Squares</title>
-    <meta name="version" content="6.2.1">
+    <meta name="version" content="6.2.2">
     <meta name="gs-app-id" content="sb-squares">
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -1413,7 +1413,7 @@
         const avail=[]; for(let r=0;r<10;r++)for(let c=0;c<10;c++){const k=`${r}_${c}`;if(!gridData[k])avail.push(k);} if(avail.length<count){showToast('Not enough boxes!');return;}
         if(pickMethod==='manual'){manualSelectMode=true;manualInitials=init;manualBoxTarget=count;manualPicks=[];document.getElementById('setupOverlay').classList.add('hidden');switchTab('grid');updateSelectBanner();document.getElementById('selectBanner').classList.remove('hidden');renderGrid();showToast(`Tap ${count} box${count>1?'es':''}`);return;}
         const picks=[...avail].sort(()=>Math.random()-0.5).slice(0,count); const btn=document.getElementById('claimBtn'); btn.disabled=true; btn.innerHTML='<span class="spinner"></span> Claiming...';
-        try{const up={};up[gRef(`players/${currentUser.uid}`)]={name:currentUser.displayName||currentUser.email,initials:init,boxCount:count,email:currentUser.email};picks.forEach(k=>{up[gRef(`grid/${k}`)]={uid:currentUser.uid,initials:init,name:currentUser.displayName||currentUser.email};});up[`${GAME_REF}/users/${currentUser.uid}/games/${currentGameId}`]=true;await db.ref().update(up);document.getElementById('setupOverlay').classList.add('hidden');showToast(`Claimed ${count} box${count>1?'es':''}! \ud83c\udfc8`);}catch(e){showToast('Error: '+e.message);}finally{btn.disabled=false;btn.textContent='Claim Boxes';}
+        try{const up={};up[gRef(`players/${currentUser.uid}`)]={name:currentUser.displayName||currentUser.email,initials:init,boxCount:count,email:currentUser.email};picks.forEach(k=>{up[gRef(`grid/${k}`)]={uid:currentUser.uid,initials:init,name:currentUser.displayName||currentUser.email};});up[`${GAME_REF}/users/${currentUser.uid}/games/${currentGameId}`]=true;await db.ref().update(up);document.getElementById('setupOverlay').classList.add('hidden');document.getElementById('claimPrompt').classList.add('hidden');showToast(`Claimed ${count} box${count>1?'es':''}! \ud83c\udfc8`);}catch(e){showToast('Error: '+e.message);}finally{btn.disabled=false;btn.textContent='Claim Boxes';}
     }
 
     // ══════════════════════════════════════════════════
@@ -1436,7 +1436,7 @@
         if(manualPicks.length!==manualBoxTarget)return; const btn=document.getElementById('confirmSelectBtn'); btn.disabled=true; btn.textContent='...';
         try{const up={};const tUid=adminActingAsUid||currentUser.uid;const tName=adminActingAsData?adminActingAsData.name:(currentUser.displayName||currentUser.email);const tEmail=adminActingAsData?(adminActingAsData.email||''):currentUser.email;const total=isAddMoreMode?(addMoreOriginalCount+manualBoxTarget):manualBoxTarget;
         up[gRef(`players/${tUid}`)]={name:tName,initials:manualInitials,boxCount:total,email:tEmail};manualPicks.forEach(k=>{up[gRef(`grid/${k}`)]={uid:tUid,initials:manualInitials,name:tName};});up[`${GAME_REF}/users/${tUid}/games/${currentGameId}`]=true;await db.ref().update(up);showToast(`Claimed ${manualBoxTarget} box${manualBoxTarget>1?'es':''}! \ud83c\udfc8`);}catch(e){showToast('Error: '+e.message);}
-        finally{manualSelectMode=false;manualPicks=[];isAddMoreMode=false;addMoreOriginalCount=0;adminActingAsUid=null;adminActingAsData=null;document.getElementById('selectBanner').classList.add('hidden');btn.disabled=false;btn.textContent='Done';renderGrid();}
+        finally{manualSelectMode=false;manualPicks=[];isAddMoreMode=false;addMoreOriginalCount=0;adminActingAsUid=null;adminActingAsData=null;document.getElementById('selectBanner').classList.add('hidden');document.getElementById('claimPrompt').classList.add('hidden');btn.disabled=false;btn.textContent='Done';renderGrid();}
     }
     function cancelManualSelection() { manualSelectMode=false;manualPicks=[];isAddMoreMode=false;addMoreOriginalCount=0;adminActingAsUid=null;adminActingAsData=null;document.getElementById('selectBanner').classList.add('hidden');renderGrid();if(!playersData[currentUser.uid])document.getElementById('setupOverlay').classList.remove('hidden'); }
 
