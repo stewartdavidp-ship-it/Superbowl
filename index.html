@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Super Bowl LX Squares</title>
-    <meta name="version" content="5.7.0">
+    <meta name="version" content="6.0.0">
     <meta name="gs-app-id" content="sb-squares">
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -413,6 +413,89 @@
         .winner-card .winner-prize { font-size: 1.4rem; font-weight: 700; color: var(--success); margin-bottom: 16px; }
         .winner-card .dismiss-btn { background: linear-gradient(135deg, var(--gold), var(--gold-dim)); color: #1a1a1a; border: none; border-radius: 10px; padding: 12px 36px; font-family: 'Outfit', sans-serif; font-weight: 700; font-size: 1rem; cursor: pointer; transition: transform 0.1s; }
         .winner-card .dismiss-btn:hover { transform: scale(1.05); }
+    
+        /* ── Lobby ── */
+        .lobby-section { padding: 20px 0; }
+        .lobby-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 24px; }
+        .lobby-btn {
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            gap: 8px; padding: 28px 16px; border-radius: 16px; cursor: pointer;
+            border: 1px solid rgba(255,255,255,0.08); transition: all 0.2s;
+            font-family: 'Outfit', sans-serif; text-align: center;
+        }
+        .lobby-btn:hover { transform: translateY(-2px); }
+        .lobby-btn .lobby-icon { font-size: 2.2rem; }
+        .lobby-btn .lobby-label { font-family: 'Bebas Neue', sans-serif; font-size: 1.2rem; letter-spacing: 2px; }
+        .lobby-btn .lobby-sub { font-size: 0.72rem; color: var(--text-muted); }
+        .lobby-btn-create {
+            background: linear-gradient(145deg, rgba(255,182,18,0.12), rgba(255,182,18,0.04));
+            border-color: rgba(255,182,18,0.2); color: var(--gold);
+        }
+        .lobby-btn-create:hover { background: linear-gradient(145deg, rgba(255,182,18,0.2), rgba(255,182,18,0.08)); border-color: rgba(255,182,18,0.35); }
+        .lobby-btn-join {
+            background: linear-gradient(145deg, rgba(102,126,234,0.12), rgba(102,126,234,0.04));
+            border-color: rgba(102,126,234,0.2); color: var(--accent);
+        }
+        .lobby-btn-join:hover { background: linear-gradient(145deg, rgba(102,126,234,0.2), rgba(102,126,234,0.08)); border-color: rgba(102,126,234,0.35); }
+        .grid-card {
+            background: linear-gradient(145deg, var(--bg-secondary), var(--bg-primary));
+            border: 1px solid rgba(255,255,255,0.06); border-radius: 12px;
+            padding: 14px 16px; margin-bottom: 8px; cursor: pointer;
+            transition: all 0.2s; display: flex; align-items: center; gap: 12px;
+        }
+        .grid-card:hover { border-color: rgba(255,182,18,0.25); transform: translateY(-1px); }
+        .grid-card .gc-icon { font-size: 1.8rem; }
+        .grid-card .gc-info { flex: 1; min-width: 0; }
+        .grid-card .gc-name { font-weight: 600; font-size: 0.95rem; }
+        .grid-card .gc-meta { font-size: 0.72rem; color: var(--text-muted); margin-top: 2px; }
+        .grid-card .gc-code { font-family: 'Bebas Neue', sans-serif; font-size: 1rem; letter-spacing: 3px; color: var(--gold); background: rgba(255,182,18,0.1); padding: 2px 10px; border-radius: 6px; }
+        .grid-card .gc-admin-badge { font-size: 0.65rem; background: rgba(255,182,18,0.15); color: var(--gold); padding: 2px 6px; border-radius: 4px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
+        .grid-card .gc-arrow { color: var(--text-muted); font-size: 1.2rem; }
+        .no-grids-msg { text-align: center; padding: 40px 20px; color: var(--text-muted); font-size: 0.88rem; }
+        .no-grids-msg .no-grids-icon { font-size: 2.5rem; margin-bottom: 8px; display: block; }
+        .game-switcher {
+            display: flex; align-items: center; gap: 8px; margin-bottom: 12px;
+            padding: 8px 12px; background: var(--bg-secondary); border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.06);
+        }
+        .game-switcher label { font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; white-space: nowrap; }
+        .game-switcher select {
+            flex: 1; padding: 6px 10px; background: var(--bg-tertiary); border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 6px; color: var(--text-primary); font-family: 'Outfit', sans-serif; font-size: 0.85rem;
+        }
+        .game-switcher select:focus { outline: none; border-color: var(--gold); }
+        .back-lobby-btn { background: none; border: 1px solid rgba(255,255,255,0.12); color: var(--text-secondary); padding: 5px 10px; border-radius: 6px; font-size: 0.75rem; cursor: pointer; font-family: 'Outfit', sans-serif; white-space: nowrap; }
+        .back-lobby-btn:hover { border-color: rgba(255,255,255,0.25); color: var(--text-primary); }
+        .game-info-bar {
+            display: flex; align-items: center; gap: 10px; margin-bottom: 14px;
+            padding: 10px 14px; background: linear-gradient(135deg, rgba(255,182,18,0.08), rgba(255,182,18,0.02));
+            border: 1px solid rgba(255,182,18,0.12); border-radius: 10px; font-size: 0.78rem; flex-wrap: wrap;
+        }
+        .game-info-bar .gib-name { font-weight: 600; color: var(--gold); }
+        .game-info-bar .gib-sep { color: var(--text-muted); }
+        .game-info-bar .gib-detail { color: var(--text-secondary); }
+        .game-info-bar .gib-code {
+            margin-left: auto; font-family: 'Bebas Neue', sans-serif; letter-spacing: 3px;
+            color: var(--gold); background: rgba(255,182,18,0.12); padding: 2px 10px;
+            border-radius: 5px; font-size: 0.9rem; cursor: pointer;
+        }
+        .game-info-bar .gib-code:hover { background: rgba(255,182,18,0.22); }
+        .share-code { font-family: 'Bebas Neue', sans-serif; font-size: 3rem; letter-spacing: 8px; color: var(--gold); margin: 12px 0; }
+        .share-url { display: flex; align-items: center; gap: 6px; background: var(--bg-tertiary); border-radius: 8px; padding: 10px 12px; margin: 12px 0; font-size: 0.78rem; color: var(--text-secondary); word-break: break-all; }
+        .share-url .copy-url-btn { background: var(--accent); color: white; border: none; border-radius: 6px; padding: 6px 12px; font-size: 0.72rem; font-weight: 600; cursor: pointer; font-family: 'Outfit', sans-serif; white-space: nowrap; }
+        .btn-outline { background: transparent; border: 1px solid rgba(255,255,255,0.15); color: var(--text-secondary); border-radius: 8px; padding: 11px 20px; font-family: 'Outfit', sans-serif; font-weight: 600; font-size: 0.88rem; cursor: pointer; width: 100%; transition: all 0.15s; margin-top: 6px; }
+        .btn-outline:hover { border-color: rgba(255,255,255,0.3); color: var(--text-primary); }
+        .payout-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+        .payout-item { text-align: center; }
+        .payout-item label { display: block; font-family: 'Bebas Neue', sans-serif; font-size: 0.9rem; letter-spacing: 1px; color: var(--text-secondary); margin-bottom: 4px; }
+        .payout-item input { width: 100%; padding: 8px 4px; background: var(--bg-tertiary); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; color: var(--text-primary); font-family: 'Outfit', sans-serif; font-size: 0.9rem; text-align: center; }
+        .payout-item input:focus { outline: none; border-color: var(--gold); }
+        .payout-total { text-align: center; font-size: 0.78rem; margin-top: 6px; }
+        .payout-total.valid { color: var(--success); }
+        .payout-total.invalid { color: var(--danger); }
+        #qrCanvas { margin: 16px auto; display: block; border-radius: 12px; }
+        @media (max-width: 600px) { .lobby-actions { grid-template-columns: 1fr; } }
+
     </style>
 </head>
 <body>
@@ -449,21 +532,57 @@
             <div class="user-bar hidden" id="userBar">
                 <img id="userPhoto" src="" alt="">
                 <span id="userName"></span>
-                <span class="badge hidden" id="userBadge"></span>
                 <button class="sign-out-btn" onclick="signOut()">Sign Out</button>
             </div>
         </div>
 
         <div id="authScreen" class="auth-section">
             <h2>Join the Grid</h2>
-            <p>Sign in with Google to claim your squares.<br>$1 per box &bull; $25 per quarter</p>
+            <p>Sign in with Google to create or join a squares pool.</p>
             <button class="google-btn" onclick="signIn()">
                 <svg viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
                 Sign in with Google
             </button>
         </div>
 
+
+        <!-- ═══ LOBBY SCREEN ═══ -->
+        <div id="lobbyScreen" class="lobby-section hidden">
+            <div class="lobby-actions">
+                <div class="lobby-btn lobby-btn-create" onclick="showCreateGameModal()">
+                    <div class="lobby-icon">🏟️</div>
+                    <div class="lobby-label">Create a Grid</div>
+                    <div class="lobby-sub">Set up your own pool</div>
+                </div>
+                <div class="lobby-btn lobby-btn-join" onclick="showJoinGameModal()">
+                    <div class="lobby-icon">🎟️</div>
+                    <div class="lobby-label">Join a Grid</div>
+                    <div class="lobby-sub">Enter a 5-letter code</div>
+                </div>
+            </div>
+            <div class="my-grids-section">
+                <div style="font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:2px;color:var(--text-secondary);margin-bottom:10px;display:flex;align-items:center;gap:8px;">🏈 Your Grids</div>
+                <div id="myGridsList"></div>
+            </div>
+        </div>
+
         <div id="mainApp" class="hidden">
+            <!-- Game navigation -->
+            <div id="gameSwitcher" class="game-switcher hidden">
+                <button class="back-lobby-btn" onclick="goToLobby()">← Lobby</button>
+                <label>Grid:</label>
+                <select id="gameSwitcherSelect" onchange="switchToGame(this.value)"></select>
+            </div>
+            <div id="singleGameBack" class="hidden" style="margin-bottom:12px;">
+                <button class="back-lobby-btn" onclick="goToLobby()">← Lobby</button>
+            </div>
+            <div id="gameInfoBar" class="game-info-bar hidden">
+                <span class="gib-name" id="gibName"></span>
+                <span class="gib-sep">•</span>
+                <span class="gib-detail" id="gibDetail"></span>
+                <span class="gib-code" id="gibCode" onclick="showShareModal()" title="Tap to share"></span>
+            </div>
+
             <div class="tab-nav">
                 <button class="tab-btn active" onclick="switchTab('grid')">🏈 Grid</button>
                 <button class="tab-btn" onclick="switchTab('players')">🏆 Players</button>
@@ -500,6 +619,21 @@
                     <div class="legend-item"><div class="legend-swatch sw-mine"></div> Yours</div>
                     <div class="legend-item"><div class="legend-swatch sw-winner"></div> Winner</div>
                 </div>
+                <!-- Add More Boxes -->
+                <div id="addMoreBar" class="hidden" style="margin-top:14px;padding:12px 14px;background:linear-gradient(135deg,rgba(102,126,234,0.1),rgba(102,126,234,0.04));border:1px solid rgba(102,126,234,0.18);border-radius:10px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+                    <div style="flex:1;min-width:140px;">
+                        <div style="font-size:0.82rem;color:var(--text-primary);">You have <strong id="addMoreCurrent" style="color:var(--accent);">0</strong> boxes</div>
+                        <div style="font-size:0.7rem;color:var(--text-muted);margin-top:2px;" id="addMoreCostHint"></div>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:6px;">
+                        <label style="font-size:0.72rem;color:var(--text-muted);">Add:</label>
+                        <select id="addMoreCount" style="padding:6px 8px;background:var(--bg-tertiary);border:1px solid rgba(255,255,255,0.1);border-radius:6px;color:var(--text-primary);font-family:'Outfit',sans-serif;font-size:0.85rem;width:60px;text-align:center;" onchange="updateAddMoreHint()"></select>
+                    </div>
+                    <div style="display:flex;gap:6px;">
+                        <button class="btn-sm btn-confirm" onclick="startAddMore('auto')" id="addMoreAutoBtn" title="Random placement">🎲 Auto</button>
+                        <button class="btn-sm" onclick="startAddMore('manual')" style="background:var(--bg-tertiary);color:var(--text-secondary);border:1px solid rgba(255,255,255,0.15);" title="Pick your own">👆 Pick</button>
+                    </div>
+                </div>
             </div>
 
             <div id="tab-players" class="tab-content">
@@ -520,6 +654,11 @@
             </div>
 
             <div id="tab-admin" class="tab-content">
+                <div class="admin-card">
+                    <h3>📤 Share Grid</h3>
+                    <p>Share the code or link so others can join.</p>
+                    <button class="btn-admin" onclick="showShareModal()">Show Code &amp; Link</button>
+                </div>
                 <div class="admin-card">
                     <h3>Grid Numbers</h3>
                     <p id="numbersStatus">Numbers have not been assigned yet.</p>
@@ -557,30 +696,7 @@
                     <div id="managePlayerInfo" style="font-size:0.75rem;color:var(--text-muted);"></div>
                     <div id="managePlayerError" style="font-size:0.72rem;color:var(--danger);margin-top:4px;display:none;"></div>
                 </div>
-                <div class="admin-card">
-                    <h3>🧪 Test Mode</h3>
-                    <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
-                        <label style="font-size:0.82rem;color:var(--text-secondary);cursor:pointer;display:flex;align-items:center;gap:8px;">
-                            <input type="checkbox" id="testModeToggle" onchange="toggleTestMode()" style="width:18px;height:18px;accent-color:var(--gold);">
-                            Enable Test Mode
-                        </label>
-                        <span id="testModeStatus" style="font-size:0.72rem;color:var(--text-muted);"></span>
-                    </div>
-                    <div id="testModeControls" class="hidden">
-                        <p>Add simulated users. They'll get random boxes on the grid. All test users are removed when you disable test mode.</p>
-                        <div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap;">
-                            <input type="text" id="testUserName" placeholder="Name (e.g. John)" maxlength="20" style="flex:1;min-width:120px;padding:9px 12px;background:var(--bg-tertiary);border:1px solid rgba(255,255,255,0.1);border-radius:6px;color:var(--text-primary);font-family:'Outfit',sans-serif;font-size:0.85rem;">
-                            <input type="text" id="testUserInitials" placeholder="Initials" maxlength="3" style="width:80px;padding:9px 12px;background:var(--bg-tertiary);border:1px solid rgba(255,255,255,0.1);border-radius:6px;color:var(--text-primary);font-family:'Outfit',sans-serif;font-size:0.85rem;text-transform:uppercase;letter-spacing:2px;font-weight:700;">
-                            <select id="testUserBoxes" style="width:70px;padding:9px 6px;background:var(--bg-tertiary);border:1px solid rgba(255,255,255,0.1);border-radius:6px;color:var(--text-primary);font-family:'Outfit',sans-serif;font-size:0.85rem;"></select>
-                            <button class="btn-admin" onclick="addTestUser()" style="white-space:nowrap;">Add User</button>
-                        </div>
-                        <div id="testUserError" style="font-size:0.72rem;color:var(--danger);margin-bottom:8px;display:none;"></div>
-                        <div id="testUsersList" style="font-size:0.8rem;color:var(--text-secondary);"></div>
-                        <div style="margin-top:10px;">
-                            <button class="btn-admin" onclick="fillGridWithTestUsers()" style="font-size:0.8rem;padding:8px 14px;">Auto-Fill Remaining</button>
-                        </div>
-                    </div>
-                </div>
+                
                 <div class="admin-card">
                     <h3>Danger Zone</h3>
                     <div class="admin-btn-row">
@@ -634,6 +750,74 @@
         </div>
     </div>
 
+
+    <!-- ═══ CREATE GAME MODAL ═══ -->
+    <div id="createGameOverlay" class="overlay hidden">
+        <div class="overlay-card" onclick="event.stopPropagation()">
+            <h2>🏟️ Create a Grid</h2>
+            <div class="sub">Set up your own Super Bowl squares pool.</div>
+            <div class="form-group">
+                <label>Grid Name</label>
+                <input type="text" id="createGameName" maxlength="40" placeholder="e.g. Family Pool 2026">
+            </div>
+            <div class="form-group">
+                <label>Cost Per Square</label>
+                <select id="createCostPerSquare">
+                    <option value="0">Free (no cost)</option>
+                    <option value="1" selected>$1</option>
+                    <option value="2">$2</option>
+                    <option value="5">$5</option>
+                    <option value="10">$10</option>
+                    <option value="20">$20</option>
+                    <option value="50">$50</option>
+                </select>
+                <div class="helper">Total pot: <strong id="createPotPreview">$100</strong> (100 squares)</div>
+            </div>
+            <div class="form-group">
+                <label>Payout Split (% of pot per quarter)</label>
+                <div class="payout-grid">
+                    <div class="payout-item"><label>Q1</label><input type="number" id="payQ1" value="20" min="0" max="100" oninput="updatePayoutTotal()"></div>
+                    <div class="payout-item"><label>Q2</label><input type="number" id="payQ2" value="20" min="0" max="100" oninput="updatePayoutTotal()"></div>
+                    <div class="payout-item"><label>Q3</label><input type="number" id="payQ3" value="20" min="0" max="100" oninput="updatePayoutTotal()"></div>
+                    <div class="payout-item"><label>Q4</label><input type="number" id="payQ4" value="40" min="0" max="100" oninput="updatePayoutTotal()"></div>
+                </div>
+                <div class="payout-total valid" id="payoutTotal">Total: 100% ✓</div>
+            </div>
+            <button class="btn-gold" id="createGameBtn" onclick="createGame()">Create Grid</button>
+            <button class="btn-outline" onclick="closeOverlay('createGameOverlay')">Cancel</button>
+        </div>
+    </div>
+
+    <!-- ═══ JOIN GAME MODAL ═══ -->
+    <div id="joinGameOverlay" class="overlay hidden">
+        <div class="overlay-card" onclick="event.stopPropagation()">
+            <h2>🎟️ Join a Grid</h2>
+            <div class="sub">Enter the 5-letter code shared by the grid admin.</div>
+            <div class="form-group">
+                <label>Grid Code</label>
+                <input type="text" id="joinCodeInput" maxlength="5" placeholder="ABCDE" autocomplete="off" style="text-transform:uppercase; letter-spacing:4px; font-weight:700; font-size:1.4rem; text-align:center; font-family:'Bebas Neue',sans-serif;">
+                <div class="error-text" id="joinCodeError"></div>
+            </div>
+            <button class="btn-gold" id="joinGameBtn" onclick="joinGame()">Join Grid</button>
+            <button class="btn-outline" onclick="closeOverlay('joinGameOverlay')">Cancel</button>
+        </div>
+    </div>
+
+    <!-- ═══ SHARE MODAL ═══ -->
+    <div id="shareOverlay" class="overlay hidden" onclick="closeOverlay('shareOverlay')">
+        <div class="overlay-card" onclick="event.stopPropagation()" style="text-align:center;">
+            <h2>📤 Share This Grid</h2>
+            <div class="sub">Send the code or link to friends.</div>
+            <div class="share-code" id="shareCode"></div>
+            <canvas id="qrCanvas" width="200" height="200"></canvas>
+            <div class="share-url">
+                <span id="shareUrlText" style="flex:1;text-align:left;"></span>
+                <button class="copy-url-btn" onclick="copyShareUrl()">Copy</button>
+            </div>
+            <button class="btn-outline" onclick="closeOverlay('shareOverlay')" style="margin-top:10px;">Close</button>
+        </div>
+    </div>
+
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
@@ -641,8 +825,7 @@
     // ══════════════════════════════════════════════════
     //  CONFIG
     // ══════════════════════════════════════════════════
-    const ADMIN_EMAIL = 'stewartdavidp@gmail.com';
-    const GAME_REF   = 'sb-squares-lx';
+    const GAME_REF = 'sb-squares-lx';
 
     firebase.initializeApp({
         apiKey: "AIzaSyBQVwn8vOrFTzLlm2MYIPBwgZV2xR9AuhM",
@@ -657,508 +840,769 @@
     const db   = firebase.database();
 
     // ── State ──
-    let currentUser = null, isAdmin = false, listenersAttached = false;
+    let currentUser = null;
+    let currentGameId = null, currentGameConfig = null, isGameAdmin = false;
     let gridData = {}, playersData = {};
     let colNumbers = null, rowNumbers = null, numbersAssigned = false;
     let scores = { q1: null, q2: null, q3: null, q4: null };
-    let celebrationQueue = [], confettiAnimId = null, confettiPieces = [], audioCtx = null;
+    let myGames = {};
+    let gameListeners = [];
     let pickMethod = 'auto';
     let manualSelectMode = false, manualInitials = '', manualBoxTarget = 0, manualPicks = [];
     let isAddMoreMode = false, addMoreOriginalCount = 0;
+    let adminActingAsUid = null, adminActingAsData = null;
+    let celebrationQueue = [], confettiAnimId = null, confettiPieces = [], audioCtx = null;
+    let pendingJoinCode = null;
+
+    // ── Deep Link ──
+    (function checkDeepLink() {
+        const params = new URLSearchParams(window.location.search);
+        const code = (params.get('code') || '').toUpperCase().trim();
+        if (code && /^[A-Z]{5}$/.test(code)) pendingJoinCode = code;
+    })();
 
     // ══════════════════════════════════════════════════
-    //  SOUND EFFECTS SYSTEM
+    //  SOUND EFFECTS
     // ══════════════════════════════════════════════════
-    function getAudioCtx() {
-        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        return audioCtx;
-    }
-
-    // Standard tap sound — short crisp pop
-    function playTapSound() {
-        try {
-            const ctx = getAudioCtx();
-            const now = ctx.currentTime;
-            const osc = ctx.createOscillator();
-            const gain = ctx.createGain();
-            osc.type = 'sine';
-            osc.frequency.setValueAtTime(880, now);
-            osc.frequency.exponentialRampToValueAtTime(440, now + 0.08);
-            gain.gain.setValueAtTime(0.15, now);
-            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
-            osc.connect(gain); gain.connect(ctx.destination);
-            osc.start(now); osc.stop(now + 0.12);
-        } catch(e) {}
-    }
-
-    // Undo/remove tap sound — lower tone
-    function playUndoSound() {
-        try {
-            const ctx = getAudioCtx();
-            const now = ctx.currentTime;
-            const osc = ctx.createOscillator();
-            const gain = ctx.createGain();
-            osc.type = 'sine';
-            osc.frequency.setValueAtTime(440, now);
-            osc.frequency.exponentialRampToValueAtTime(220, now + 0.1);
-            gain.gain.setValueAtTime(0.12, now);
-            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
-            osc.connect(gain); gain.connect(ctx.destination);
-            osc.start(now); osc.stop(now + 0.14);
-        } catch(e) {}
-    }
-
-    // All boxes filled sound — ascending triumphant ding-ding-ding
-    function playCompletionSound() {
-        try {
-            const ctx = getAudioCtx();
-            const now = ctx.currentTime;
-            const notes = [
-                { freq: 659.25, start: 0,    dur: 0.12 },   // E5
-                { freq: 783.99, start: 0.1,  dur: 0.12 },   // G5
-                { freq: 987.77, start: 0.2,  dur: 0.12 },   // B5
-                { freq: 1318.5, start: 0.32, dur: 0.35 },   // E6 (held)
-                { freq: 987.77, start: 0.32, dur: 0.35 },   // B5 harmony
-            ];
-            notes.forEach(n => {
-                const osc = ctx.createOscillator();
-                const gain = ctx.createGain();
-                osc.type = 'triangle';
-                osc.frequency.value = n.freq;
-                gain.gain.setValueAtTime(0, now + n.start);
-                gain.gain.linearRampToValueAtTime(0.18, now + n.start + 0.02);
-                gain.gain.exponentialRampToValueAtTime(0.001, now + n.start + n.dur);
-                osc.connect(gain); gain.connect(ctx.destination);
-                osc.start(now + n.start); osc.stop(now + n.start + n.dur + 0.05);
-            });
-            // Sparkle noise
-            const bufSize = ctx.sampleRate * 0.3;
-            const buf = ctx.createBuffer(1, bufSize, ctx.sampleRate);
-            const d = buf.getChannelData(0);
-            for (let i = 0; i < bufSize; i++) d[i] = (Math.random() * 2 - 1);
-            const noise = ctx.createBufferSource(); noise.buffer = buf;
-            const nGain = ctx.createGain();
-            const nFilter = ctx.createBiquadFilter();
-            nFilter.type = 'highpass'; nFilter.frequency.value = 8000;
-            nGain.gain.setValueAtTime(0, now + 0.3);
-            nGain.gain.linearRampToValueAtTime(0.06, now + 0.35);
-            nGain.gain.exponentialRampToValueAtTime(0.001, now + 0.7);
-            noise.connect(nFilter); nFilter.connect(nGain); nGain.connect(ctx.destination);
-            noise.start(now + 0.3); noise.stop(now + 0.8);
-        } catch(e) {}
-    }
+    function getAudioCtx() { if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); return audioCtx; }
+    function playTapSound() { try { const ctx=getAudioCtx(),now=ctx.currentTime,o=ctx.createOscillator(),g=ctx.createGain(); o.type='sine'; o.frequency.setValueAtTime(880,now); o.frequency.exponentialRampToValueAtTime(440,now+0.08); g.gain.setValueAtTime(0.15,now); g.gain.exponentialRampToValueAtTime(0.001,now+0.1); o.connect(g); g.connect(ctx.destination); o.start(now); o.stop(now+0.12); } catch(e){} }
+    function playUndoSound() { try { const ctx=getAudioCtx(),now=ctx.currentTime,o=ctx.createOscillator(),g=ctx.createGain(); o.type='sine'; o.frequency.setValueAtTime(440,now); o.frequency.exponentialRampToValueAtTime(220,now+0.1); g.gain.setValueAtTime(0.12,now); g.gain.exponentialRampToValueAtTime(0.001,now+0.12); o.connect(g); g.connect(ctx.destination); o.start(now); o.stop(now+0.14); } catch(e){} }
+    function playCompletionSound() { try { const ctx=getAudioCtx(),now=ctx.currentTime; [{freq:659.25,start:0,dur:0.12},{freq:783.99,start:0.1,dur:0.12},{freq:987.77,start:0.2,dur:0.12},{freq:1318.5,start:0.32,dur:0.35},{freq:987.77,start:0.32,dur:0.35}].forEach(n=>{const o=ctx.createOscillator(),g=ctx.createGain(); o.type='triangle'; o.frequency.value=n.freq; g.gain.setValueAtTime(0,now+n.start); g.gain.linearRampToValueAtTime(0.18,now+n.start+0.02); g.gain.exponentialRampToValueAtTime(0.001,now+n.start+n.dur); o.connect(g); g.connect(ctx.destination); o.start(now+n.start); o.stop(now+n.start+n.dur+0.05);}); } catch(e){} }
+    function playVictorySound() { try { const ctx=getAudioCtx(),now=ctx.currentTime; [{freq:523.25,start:0,dur:0.15},{freq:659.25,start:0.12,dur:0.15},{freq:783.99,start:0.24,dur:0.15},{freq:1046.5,start:0.38,dur:0.4},{freq:783.99,start:0.38,dur:0.4},{freq:659.25,start:0.38,dur:0.4}].forEach(n=>{const o=ctx.createOscillator(),g=ctx.createGain(); o.type='square'; o.frequency.value=n.freq; g.gain.setValueAtTime(0,now+n.start); g.gain.linearRampToValueAtTime(0.12,now+n.start+0.02); g.gain.exponentialRampToValueAtTime(0.001,now+n.start+n.dur); o.connect(g); g.connect(ctx.destination); o.start(now+n.start); o.stop(now+n.start+n.dur+0.05);}); } catch(e){} }
 
     // ══════════════════════════════════════════════════
     //  AUTH
     // ══════════════════════════════════════════════════
-    function signIn() {
-        auth.signInWithPopup(new firebase.auth.GoogleAuthProvider())
-            .catch(e => showToast('Sign-in failed: ' + e.message));
-    }
-    function signOut() { auth.signOut(); }
-
-    auth.onAuthStateChanged(user => {
-        if (user) {
-            currentUser = user;
-            isAdmin = (user.email === ADMIN_EMAIL);
-            console.log('UID:', user.uid, '| Email:', user.email, '| Admin:', isAdmin);
-            document.getElementById('authScreen').classList.add('hidden');
-            document.getElementById('mainApp').classList.remove('hidden');
-            document.getElementById('userBar').classList.remove('hidden');
-            document.getElementById('userName').textContent = user.displayName || user.email;
-            document.getElementById('userPhoto').src = user.photoURL || '';
-            document.getElementById('adminTabBtn').classList.toggle('hidden', !isAdmin);
-            renderGrid();
-            buildScoreInputs();
-            if (!listenersAttached) { listenToData(); listenersAttached = true; }
-        } else {
-            currentUser = null; isAdmin = false;
-            document.getElementById('authScreen').classList.remove('hidden');
-            document.getElementById('mainApp').classList.add('hidden');
-            document.getElementById('userBar').classList.add('hidden');
-            document.getElementById('setupOverlay').classList.add('hidden');
-        }
-    });
+    function signIn() { auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()).catch(e => showToast('Sign-in failed: ' + e.message)); }
+    function signOut() { detachGameListeners(); currentGameId = null; myGames = {}; auth.signOut(); }
 
     // ══════════════════════════════════════════════════
-    //  LISTENERS
+    //  LEGACY MIGRATION — v5.x flat structure → v6.0 games/{id}/
+    //  Checks if legacy data exists at sb-squares-lx/grid (flat)
+    //  and migrates it into a proper game entry, preserving all data.
+    //  Only runs once — sets sb-squares-lx/migrated = true when done.
     // ══════════════════════════════════════════════════
-    function listenToData() {
-        db.ref(`${GAME_REF}/grid`).on('value', s => {
-            gridData = s.val() || {};
-            renderGrid(); updateGridInfo();
-        });
-        db.ref(`${GAME_REF}/players`).on('value', s => {
-            playersData = s.val() || {};
-            checkSetup(); renderPlayers(); updateBadge();
-            if (testMode) { renderTestUsersList(); buildTestBoxSelect(); }
-        });
-        db.ref(`${GAME_REF}/numbers`).on('value', s => {
-            const v = s.val();
-            if (v && v.cols && v.rows) { colNumbers = v.cols; rowNumbers = v.rows; numbersAssigned = true; }
-            else { colNumbers = null; rowNumbers = null; numbersAssigned = false; }
-            renderGrid(); updateNumbersUI(); renderQuarters();
-        });
-        db.ref(`${GAME_REF}/scores`).on('value', s => {
-            const oldScores = { ...scores };
-            scores = s.val() || { q1:null, q2:null, q3:null, q4:null };
-            if (numbersAssigned && !isAdmin) {
-                const newWinners = [];
-                ['q1','q2','q3','q4'].forEach((q, i) => {
-                    const oldS = oldScores[q]; const newS = scores[q];
-                    const hadScore = oldS && oldS.pats !== undefined && oldS.hawks !== undefined;
-                    const hasScore = newS && newS.pats !== undefined && newS.hawks !== undefined;
-                    if (hasScore && !hadScore) {
-                        const ci = colNumbers.indexOf(newS.pats); const ri = rowNumbers.indexOf(newS.hawks);
-                        if (ci !== -1 && ri !== -1) {
-                            const cellData = gridData[`${ri}_${ci}`];
-                            if (cellData) newWinners.push({ quarter: ['Q1','Q2','Q3','Q4'][i], name: cellData.name, initials: cellData.initials, pats: newS.pats, hawks: newS.hawks });
-                        }
-                    }
-                });
-                if (newWinners.length > 0) { celebrationQueue = [...newWinners]; showNextCelebration(); }
-            }
-            renderQuarters(); renderPlayers(); renderGrid(); populateScoreInputs();
-        });
-    }
+    const LEGACY_ADMIN_EMAIL = 'stewartdavidp@gmail.com';
+    const LEGACY_GAME_NAME = 'SB LX Original Grid';
 
-    // ══════════════════════════════════════════════════
-    //  SETUP
-    // ══════════════════════════════════════════════════
-    function checkSetup() {
-        if (!currentUser) return;
-        if (manualSelectMode) return;
-        if (!playersData[currentUser.uid]) {
-            buildBoxSelect();
-            document.getElementById('setupOverlay').classList.remove('hidden');
-        } else {
-            document.getElementById('setupOverlay').classList.add('hidden');
-        }
-    }
+    async function migrateLegacyData() {
+        // Check if already migrated
+        const migratedSnap = await db.ref(`${GAME_REF}/migrated`).once('value');
+        if (migratedSnap.val()) return; // already done
 
-    function updateBadge() {
-        if (!currentUser) return;
-        const my = playersData[currentUser.uid];
-        const el = document.getElementById('userBadge');
-        if (my) { el.textContent = my.initials; el.classList.remove('hidden'); }
-        else { el.classList.add('hidden'); }
-    }
-
-    function buildBoxSelect() {
-        const avail = Math.min(10, 100 - Object.keys(gridData).length);
-        const sel = document.getElementById('boxCountSelect');
-        sel.innerHTML = '';
-        for (let i = 1; i <= Math.max(avail, 1); i++) {
-            const o = document.createElement('option');
-            o.value = i; o.textContent = `${i} box${i>1?'es':''} — $${i}`;
-            sel.appendChild(o);
-        }
-        sel.value = Math.min(5, avail);
-        updateCost(); sel.onchange = updateCost;
-    }
-
-    function updateCost() {
-        document.getElementById('costPreview').textContent = '$' + (parseInt(document.getElementById('boxCountSelect').value) || 0);
-    }
-
-    // ══════════════════════════════════════════════════
-    //  CLAIM
-    // ══════════════════════════════════════════════════
-    function setPickMethod(method) {
-        pickMethod = method;
-        const autoBtn = document.getElementById('pickAuto');
-        const manualBtn = document.getElementById('pickManual');
-        if (method === 'auto') {
-            autoBtn.style.background = 'linear-gradient(135deg, var(--gold), var(--gold-dim))';
-            autoBtn.style.color = '#1a1a1a'; autoBtn.style.border = 'none';
-            manualBtn.style.background = 'var(--bg-tertiary)';
-            manualBtn.style.color = 'var(--text-secondary)'; manualBtn.style.border = '1px solid rgba(255,255,255,0.15)';
-            document.getElementById('claimBtn').textContent = 'Claim Boxes';
-        } else {
-            manualBtn.style.background = 'linear-gradient(135deg, var(--gold), var(--gold-dim))';
-            manualBtn.style.color = '#1a1a1a'; manualBtn.style.border = 'none';
-            autoBtn.style.background = 'var(--bg-tertiary)';
-            autoBtn.style.color = 'var(--text-secondary)'; autoBtn.style.border = '1px solid rgba(255,255,255,0.15)';
-            document.getElementById('claimBtn').textContent = 'Pick on Grid →';
-        }
-    }
-
-    async function claimBoxes() {
-        const init = document.getElementById('initialsInput').value.trim().toUpperCase();
-        const count = parseInt(document.getElementById('boxCountSelect').value);
-        const err = document.getElementById('initialsError');
-        err.style.display = 'none';
-
-        if (init.length < 2 || init.length > 3) { showValidationError('Enter 2-3 letter initials first!'); return; }
-        if (!/^[A-Z]+$/.test(init)) { showValidationError('Letters only for initials'); return; }
-        for (const uid in playersData) {
-            if (playersData[uid].initials === init) { showValidationError(`"${init}" is taken — try different initials`); return; }
-        }
-
-        const avail = [];
-        for (let r = 0; r < 10; r++) for (let c = 0; c < 10; c++) { const k = `${r}_${c}`; if (!gridData[k]) avail.push(k); }
-        if (avail.length < count) { showToast('Not enough boxes!'); return; }
-
-        if (pickMethod === 'manual') {
-            manualSelectMode = true; manualInitials = init; manualBoxTarget = count; manualPicks = [];
-            document.getElementById('setupOverlay').classList.add('hidden');
-            // Switch to Grid tab if not already there
-            switchTab('grid');
-            updateSelectBanner();
-            document.getElementById('selectBanner').classList.remove('hidden');
-            renderGrid();
-            // Scroll grid into view
-            document.getElementById('selectBanner').scrollIntoView({ behavior: 'smooth', block: 'start' });
-            showToast(`Tap ${count} box${count > 1 ? 'es' : ''} on the grid`);
+        // Check if legacy data exists (flat grid at root level)
+        const legacyGridSnap = await db.ref(`${GAME_REF}/grid`).once('value');
+        const legacyGrid = legacyGridSnap.val();
+        if (!legacyGrid) {
+            // No legacy data — mark migrated so we don't check again
+            await db.ref(`${GAME_REF}/migrated`).set(true);
             return;
         }
 
-        const picks = [...avail].sort(() => Math.random() - 0.5).slice(0, count);
-        const btn = document.getElementById('claimBtn');
-        btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Claiming...';
+        console.log('[MIGRATION] Found legacy v5.x data — migrating to v6.0 multi-game structure...');
+
+        // Read all legacy data
+        const [playersSnap, numbersSnap, scoresSnap] = await Promise.all([
+            db.ref(`${GAME_REF}/players`).once('value'),
+            db.ref(`${GAME_REF}/numbers`).once('value'),
+            db.ref(`${GAME_REF}/scores`).once('value'),
+        ]);
+        const legacyPlayers = playersSnap.val() || {};
+        const legacyNumbers = numbersSnap.val() || null;
+        const legacyScores = scoresSnap.val() || null;
+
+        // Figure out who the admin is
+        let adminUid = null, adminName = 'Admin';
+        for (const [uid, p] of Object.entries(legacyPlayers)) {
+            if (p.email === LEGACY_ADMIN_EMAIL) { adminUid = uid; adminName = p.name || 'Admin'; break; }
+        }
+        // If admin not found in players, use current user if they're the admin
+        if (!adminUid && currentUser?.email === LEGACY_ADMIN_EMAIL) {
+            adminUid = currentUser.uid; adminName = currentUser.displayName || currentUser.email;
+        }
+        // Fallback: first player
+        if (!adminUid) {
+            const firstUid = Object.keys(legacyPlayers)[0];
+            if (firstUid) { adminUid = firstUid; adminName = legacyPlayers[firstUid].name || 'Admin'; }
+            else { adminUid = currentUser.uid; adminName = currentUser.displayName || 'Admin'; }
+        }
+
+        // Generate a code for this game
+        let code;
+        while (true) {
+            const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ';
+            code = ''; for (let i = 0; i < 5; i++) code += chars[Math.floor(Math.random() * chars.length)];
+            const existing = await db.ref(`${GAME_REF}/codes/${code}`).once('value');
+            if (!existing.val()) break;
+        }
+
+        // Create game ID
+        const gameId = db.ref(`${GAME_REF}/games`).push().key;
+
+        // Build the migration update
+        const update = {};
+
+        // Game config — $1/square, $25/quarter (the v5.x defaults)
+        update[`${GAME_REF}/games/${gameId}/config`] = {
+            gameName: LEGACY_GAME_NAME,
+            code: code,
+            costPerSquare: 1,
+            payouts: { q1: 25, q2: 25, q3: 25, q4: 25 },
+            createdBy: adminUid,
+            createdByName: adminName,
+            createdAt: Date.now(),
+            migratedFromLegacy: true
+        };
+
+        // Copy grid data (skip test user cells)
+        for (const [key, val] of Object.entries(legacyGrid)) {
+            if (val.uid && (val.uid.startsWith('test_'))) continue;
+            update[`${GAME_REF}/games/${gameId}/grid/${key}`] = val;
+        }
+
+        // Copy players
+        for (const [uid, val] of Object.entries(legacyPlayers)) {
+            // Skip test users
+            if (uid.startsWith('test_') || val.isTest) continue;
+            update[`${GAME_REF}/games/${gameId}/players/${uid}`] = val;
+            // Add to each player's game list
+            update[`${GAME_REF}/users/${uid}/games/${gameId}`] = true;
+        }
+
+        // Copy numbers
+        if (legacyNumbers) {
+            update[`${GAME_REF}/games/${gameId}/numbers`] = legacyNumbers;
+        }
+
+        // Copy scores
+        if (legacyScores) {
+            update[`${GAME_REF}/games/${gameId}/scores`] = legacyScores;
+        }
+
+        // Register the code
+        update[`${GAME_REF}/codes/${code}`] = gameId;
+
+        // Mark migration complete
+        update[`${GAME_REF}/migrated`] = true;
+
+        // Execute migration
+        await db.ref().update(update);
+
+        console.log(`[MIGRATION] ✅ Legacy data migrated to game ${gameId} (code: ${code})`);
+        console.log(`[MIGRATION] ${Object.keys(legacyGrid).length} grid cells, ${Object.keys(legacyPlayers).length} players migrated`);
+        showToast(`Grid migrated to multi-game! Code: ${code}`);
+    }
+
+    auth.onAuthStateChanged(async user => {
+        if (user) {
+            currentUser = user;
+            document.getElementById('userBar').classList.remove('hidden');
+            document.getElementById('userName').textContent = user.displayName || user.email;
+            document.getElementById('userPhoto').src = user.photoURL || '';
+            document.getElementById('authScreen').classList.add('hidden');
+            // Run legacy migration before anything else
+            try { await migrateLegacyData(); } catch(e) { console.error('[MIGRATION] Error:', e); }
+            if (pendingJoinCode) {
+                const code = pendingJoinCode; pendingJoinCode = null;
+                window.history.replaceState({}, '', window.location.pathname);
+                await handleDeepLinkJoin(code);
+            } else {
+                showLobby();
+            }
+        } else {
+            currentUser = null;
+            document.getElementById('authScreen').classList.remove('hidden');
+            document.getElementById('lobbyScreen').classList.add('hidden');
+            document.getElementById('mainApp').classList.add('hidden');
+            document.getElementById('userBar').classList.add('hidden');
+        }
+    });
+
+    async function handleDeepLinkJoin(code) {
+        showToast('Looking up grid...');
+        const snap = await db.ref(`${GAME_REF}/codes/${code}`).once('value');
+        const gameId = snap.val();
+        if (!gameId) { showToast('Grid code not found'); showLobby(); return; }
+        await db.ref(`${GAME_REF}/users/${currentUser.uid}/games/${gameId}`).set(true);
+        openGame(gameId);
+    }
+
+    // ══════════════════════════════════════════════════
+    //  SCREEN MANAGEMENT
+    // ══════════════════════════════════════════════════
+    function showLobby() {
+        detachGameListeners(); currentGameId = null;
+        document.getElementById('lobbyScreen').classList.remove('hidden');
+        document.getElementById('mainApp').classList.add('hidden');
+        document.getElementById('authScreen').classList.add('hidden');
+        loadMyGames();
+    }
+    function goToLobby() { showLobby(); }
+
+    // ══════════════════════════════════════════════════
+    //  LOBBY — My Games
+    // ══════════════════════════════════════════════════
+    async function loadMyGames() {
+        const snap = await db.ref(`${GAME_REF}/users/${currentUser.uid}/games`).once('value');
+        const gameIds = snap.val() || {};
+        const container = document.getElementById('myGridsList');
+
+        if (Object.keys(gameIds).length === 0) {
+            container.innerHTML = '<div class="no-grids-msg"><span class="no-grids-icon">🏈</span>You haven\'t joined any grids yet.<br>Create one or join with a code!</div>';
+            myGames = {};
+            return;
+        }
+
+        myGames = {};
+        const promises = Object.keys(gameIds).map(async gid => {
+            const gSnap = await db.ref(`${GAME_REF}/games/${gid}/config`).once('value');
+            const conf = gSnap.val();
+            if (conf) {
+                const pSnap = await db.ref(`${GAME_REF}/games/${gid}/players`).once('value');
+                const playerCount = pSnap.val() ? Object.keys(pSnap.val()).length : 0;
+                const grSnap = await db.ref(`${GAME_REF}/games/${gid}/grid`).once('value');
+                const gridCount = grSnap.val() ? Object.keys(grSnap.val()).length : 0;
+                myGames[gid] = { ...conf, playerCount, gridCount, gameId: gid };
+            }
+        });
+        await Promise.all(promises);
+        renderMyGames();
+    }
+
+    function renderMyGames() {
+        const container = document.getElementById('myGridsList');
+        const entries = Object.entries(myGames);
+        if (entries.length === 0) {
+            container.innerHTML = '<div class="no-grids-msg"><span class="no-grids-icon">🏈</span>No grids yet.</div>';
+            return;
+        }
+        container.innerHTML = entries
+            .sort((a, b) => (b[1].createdAt || 0) - (a[1].createdAt || 0))
+            .map(([gid, g]) => {
+                const isAdmin = g.createdBy === currentUser.uid;
+                const cost = g.costPerSquare || 0;
+                const pot = cost * 100;
+                return `<div class="grid-card" onclick="openGame('${gid}')">
+                    <div class="gc-icon">🏈</div>
+                    <div class="gc-info">
+                        <div class="gc-name">${esc(g.gameName || 'Unnamed Grid')} ${isAdmin ? '<span class="gc-admin-badge">Admin</span>' : ''}</div>
+                        <div class="gc-meta">${g.playerCount || 0} players \u2022 ${g.gridCount || 0}/100 filled${pot > 0 ? ' \u2022 $' + pot + ' pot' : ' \u2022 Free'}</div>
+                    </div>
+                    <div class="gc-code">${esc(g.code)}</div>
+                    <div class="gc-arrow">\u203a</div>
+                </div>`;
+            }).join('');
+    }
+
+    // ══════════════════════════════════════════════════
+    //  CREATE GAME
+    // ══════════════════════════════════════════════════
+    function showCreateGameModal() {
+        document.getElementById('createGameOverlay').classList.remove('hidden');
+        document.getElementById('createGameName').value = '';
+        document.getElementById('createCostPerSquare').value = '1';
+        document.getElementById('payQ1').value = 20; document.getElementById('payQ2').value = 20;
+        document.getElementById('payQ3').value = 20; document.getElementById('payQ4').value = 40;
+        updatePayoutTotal(); updatePotPreview();
+        document.getElementById('createCostPerSquare').onchange = updatePotPreview;
+        document.getElementById('createGameName').focus();
+    }
+    function updatePotPreview() {
+        const cost = parseInt(document.getElementById('createCostPerSquare').value) || 0;
+        document.getElementById('createPotPreview').textContent = cost > 0 ? `$${cost * 100}` : 'Free';
+    }
+    function updatePayoutTotal() {
+        const total = ['payQ1','payQ2','payQ3','payQ4'].reduce((s,id) => s + (parseInt(document.getElementById(id).value) || 0), 0);
+        const el = document.getElementById('payoutTotal');
+        el.textContent = total === 100 ? 'Total: 100% \u2713' : `Total: ${total}% \u2014 must equal 100%`;
+        el.className = 'payout-total ' + (total === 100 ? 'valid' : 'invalid');
+    }
+    function generateCode() {
+        const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ';
+        let code = ''; for (let i = 0; i < 5; i++) code += chars[Math.floor(Math.random() * chars.length)]; return code;
+    }
+    async function createGame() {
+        const name = document.getElementById('createGameName').value.trim();
+        if (!name) { showToast('Enter a grid name'); return; }
+        const cost = parseInt(document.getElementById('createCostPerSquare').value) || 0;
+        const q1 = parseInt(document.getElementById('payQ1').value) || 0;
+        const q2 = parseInt(document.getElementById('payQ2').value) || 0;
+        const q3 = parseInt(document.getElementById('payQ3').value) || 0;
+        const q4 = parseInt(document.getElementById('payQ4').value) || 0;
+        if (q1 + q2 + q3 + q4 !== 100) { showToast('Payouts must total 100%'); return; }
+        const btn = document.getElementById('createGameBtn');
+        btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Creating...';
         try {
-            const up = {};
-            up[`${GAME_REF}/players/${currentUser.uid}`] = { name: currentUser.displayName || currentUser.email, initials: init, boxCount: count, email: currentUser.email };
-            picks.forEach(k => { up[`${GAME_REF}/grid/${k}`] = { uid: currentUser.uid, initials: init, name: currentUser.displayName || currentUser.email }; });
-            await db.ref().update(up);
-            document.getElementById('setupOverlay').classList.add('hidden');
-            showToast(`Claimed ${count} box${count>1?'es':''}! 🏈`);
+            let code, exists = true;
+            while (exists) { code = generateCode(); const s = await db.ref(`${GAME_REF}/codes/${code}`).once('value'); exists = s.val() !== null; }
+            const gameId = db.ref(`${GAME_REF}/games`).push().key;
+            const config = { gameName: name, code, costPerSquare: cost, payouts: { q1, q2, q3, q4 }, createdBy: currentUser.uid, createdByName: currentUser.displayName || currentUser.email, createdAt: Date.now() };
+            await db.ref().update({
+                [`${GAME_REF}/games/${gameId}/config`]: config,
+                [`${GAME_REF}/codes/${code}`]: gameId,
+                [`${GAME_REF}/users/${currentUser.uid}/games/${gameId}`]: true
+            });
+            closeOverlay('createGameOverlay');
+            showToast('Grid created! \ud83c\udfc8');
+            openGame(gameId);
         } catch (e) { showToast('Error: ' + e.message); }
-        finally { btn.disabled = false; btn.textContent = 'Claim Boxes'; }
+        finally { btn.disabled = false; btn.textContent = 'Create Grid'; }
+    }
+
+    // ══════════════════════════════════════════════════
+    //  JOIN GAME
+    // ══════════════════════════════════════════════════
+    function showJoinGameModal() {
+        document.getElementById('joinGameOverlay').classList.remove('hidden');
+        document.getElementById('joinCodeInput').value = '';
+        document.getElementById('joinCodeError').style.display = 'none';
+        document.getElementById('joinCodeInput').focus();
+    }
+    async function joinGame() {
+        const code = document.getElementById('joinCodeInput').value.trim().toUpperCase();
+        const err = document.getElementById('joinCodeError');
+        err.style.display = 'none';
+        if (!code || code.length !== 5) { err.textContent = 'Enter a 5-letter code'; err.style.display = 'block'; return; }
+        const btn = document.getElementById('joinGameBtn');
+        btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Joining...';
+        try {
+            const snap = await db.ref(`${GAME_REF}/codes/${code}`).once('value');
+            const gameId = snap.val();
+            if (!gameId) { err.textContent = 'Code not found'; err.style.display = 'block'; return; }
+            await db.ref(`${GAME_REF}/users/${currentUser.uid}/games/${gameId}`).set(true);
+            closeOverlay('joinGameOverlay');
+            showToast('Joined the grid! \ud83c\udf89');
+            openGame(gameId);
+        } catch (e) { showToast('Error: ' + e.message); }
+        finally { btn.disabled = false; btn.textContent = 'Join Grid'; }
+    }
+
+    // ══════════════════════════════════════════════════
+    //  OPEN GAME
+    // ══════════════════════════════════════════════════
+    async function openGame(gameId) {
+        detachGameListeners(); currentGameId = gameId;
+        const confSnap = await db.ref(`${GAME_REF}/games/${gameId}/config`).once('value');
+        currentGameConfig = confSnap.val();
+        if (!currentGameConfig) { showToast('Game not found'); showLobby(); return; }
+        isGameAdmin = currentGameConfig.createdBy === currentUser.uid;
+        document.getElementById('lobbyScreen').classList.add('hidden');
+        document.getElementById('mainApp').classList.remove('hidden');
+        document.getElementById('authScreen').classList.add('hidden');
+        const cost = currentGameConfig.costPerSquare || 0;
+        document.getElementById('gibName').textContent = currentGameConfig.gameName;
+        document.getElementById('gibDetail').textContent = cost > 0 ? `$${cost}/sq \u2022 $${cost * 100} pot` : 'Free';
+        document.getElementById('gibCode').textContent = currentGameConfig.code;
+        document.getElementById('gameInfoBar').classList.remove('hidden');
+        document.getElementById('adminTabBtn').classList.toggle('hidden', !isGameAdmin);
+        await buildGameSwitcher();
+        switchTab('grid'); renderGrid(); buildScoreInputs();
+        attachGameListeners(gameId);
+    }
+
+    async function buildGameSwitcher() {
+        const snap = await db.ref(`${GAME_REF}/users/${currentUser.uid}/games`).once('value');
+        const gids = Object.keys(snap.val() || {});
+        if (gids.length <= 1) {
+            document.getElementById('gameSwitcher').classList.add('hidden');
+            document.getElementById('singleGameBack').classList.remove('hidden');
+        } else {
+            document.getElementById('gameSwitcher').classList.remove('hidden');
+            document.getElementById('singleGameBack').classList.add('hidden');
+            const sel = document.getElementById('gameSwitcherSelect');
+            sel.innerHTML = '';
+            for (const gid of gids) {
+                const cSnap = await db.ref(`${GAME_REF}/games/${gid}/config/gameName`).once('value');
+                const opt = document.createElement('option');
+                opt.value = gid; opt.textContent = cSnap.val() || 'Unnamed';
+                sel.appendChild(opt);
+            }
+            sel.value = currentGameId;
+        }
+    }
+    function switchToGame(gameId) { if (gameId && gameId !== currentGameId) openGame(gameId); }
+
+    // ══════════════════════════════════════════════════
+    //  SHARE & QR
+    // ══════════════════════════════════════════════════
+    function showShareModal() {
+        if (!currentGameConfig) return;
+        const code = currentGameConfig.code;
+        const url = `${window.location.origin}${window.location.pathname}?code=${code}`;
+        document.getElementById('shareCode').textContent = code;
+        document.getElementById('shareUrlText').textContent = url;
+        document.getElementById('shareOverlay').classList.remove('hidden');
+        drawQR(url);
+    }
+    function copyShareUrl() {
+        const url = document.getElementById('shareUrlText').textContent;
+        navigator.clipboard.writeText(url).then(() => showToast('Link copied!')).catch(() => showToast('Copy failed'));
+    }
+    function drawQR(text) {
+        const canvas = document.getElementById('qrCanvas');
+        const ctx = canvas.getContext('2d'); const size = 200;
+        canvas.width = size; canvas.height = size;
+        // Simple QR-like visual with finder patterns
+        const n = 25;
+        const grid = Array.from({length: n}, () => Array(n).fill(false));
+        const drawFinder = (sr, sc) => { for (let r=0;r<7;r++) for (let c=0;c<7;c++) { grid[sr+r][sc+c] = r===0||r===6||c===0||c===6||(r>=2&&r<=4&&c>=2&&c<=4); } };
+        drawFinder(0, 0); drawFinder(0, n-7); drawFinder(n-7, 0);
+        for (let i=8;i<n-8;i++) { grid[6][i]=i%2===0; grid[i][6]=i%2===0; }
+        let hash = 0;
+        for (let i=0;i<text.length;i++) hash = ((hash<<5)-hash+text.charCodeAt(i))|0;
+        let seed = Math.abs(hash);
+        for (let r=0;r<n;r++) for (let c=0;c<n;c++) { if (grid[r][c]) continue; if ((r<8&&c<8)||(r<8&&c>=n-8)||(r>=n-8&&c<8)) continue; seed=(seed*1103515245+12345)&0x7fffffff; grid[r][c]=(seed%3)===0; }
+        const cellSize = Math.floor(size/(n+6));
+        const offset = Math.floor((size-cellSize*n)/2);
+        ctx.fillStyle = '#ffffff'; ctx.beginPath();
+        if (ctx.roundRect) ctx.roundRect(0,0,size,size,12); else ctx.rect(0,0,size,size);
+        ctx.fill();
+        ctx.fillStyle = '#0e0e24';
+        for (let r=0;r<n;r++) for (let c=0;c<n;c++) if (grid[r][c]) ctx.fillRect(offset+c*cellSize, offset+r*cellSize, cellSize, cellSize);
+    }
+
+    // ══════════════════════════════════════════════════
+    //  FIREBASE LISTENERS (per-game)
+    // ══════════════════════════════════════════════════
+    function detachGameListeners() { gameListeners.forEach(({ref,event,cb}) => ref.off(event,cb)); gameListeners = []; gridData={}; playersData={}; colNumbers=null; rowNumbers=null; numbersAssigned=false; scores={q1:null,q2:null,q3:null,q4:null}; }
+
+    function attachGameListeners(gameId) {
+        const g = `${GAME_REF}/games/${gameId}`;
+        const gcb = db.ref(`${g}/grid`).on('value', s => { gridData = s.val() || {}; renderGrid(); updateGridInfo(); });
+        gameListeners.push({ref:db.ref(`${g}/grid`),event:'value',cb:gcb});
+        const pcb = db.ref(`${g}/players`).on('value', s => { playersData = s.val() || {}; checkSetup(); renderPlayers(); });
+        gameListeners.push({ref:db.ref(`${g}/players`),event:'value',cb:pcb});
+        const ncb = db.ref(`${g}/numbers`).on('value', s => { const v=s.val(); if(v&&v.cols&&v.rows){colNumbers=v.cols;rowNumbers=v.rows;numbersAssigned=true;}else{colNumbers=null;rowNumbers=null;numbersAssigned=false;} renderGrid(); updateNumbersUI(); renderQuarters(); });
+        gameListeners.push({ref:db.ref(`${g}/numbers`),event:'value',cb:ncb});
+        const scb = db.ref(`${g}/scores`).on('value', s => {
+            const oldScores={...scores}; scores=s.val()||{q1:null,q2:null,q3:null,q4:null};
+            if(numbersAssigned&&!isGameAdmin){const w=[];['q1','q2','q3','q4'].forEach((q,i)=>{const os=oldScores[q],ns=scores[q];const had=os&&os.pats!==undefined&&os.hawks!==undefined;const has=ns&&ns.pats!==undefined&&ns.hawks!==undefined;if(has&&!had){const ci=colNumbers.indexOf(ns.pats),ri=rowNumbers.indexOf(ns.hawks);if(ci!==-1&&ri!==-1){const cd=gridData[`${ri}_${ci}`];if(cd)w.push({quarter:['Q1','Q2','Q3','Q4'][i],name:cd.name,initials:cd.initials,pats:ns.pats,hawks:ns.hawks});}}});if(w.length>0){celebrationQueue=[...w];showNextCelebration();}}
+            renderQuarters(); renderPlayers(); renderGrid(); populateScoreInputs();
+        });
+        gameListeners.push({ref:db.ref(`${g}/scores`),event:'value',cb:scb});
+    }
+
+    function gRef(path) { return `${GAME_REF}/games/${currentGameId}/${path}`; }
+
+    // ══════════════════════════════════════════════════
+    //  SETUP / CLAIM
+    // ══════════════════════════════════════════════════
+    function checkSetup() { if(!currentUser||!currentGameId||manualSelectMode) return; if(!playersData[currentUser.uid]){buildBoxSelect();document.getElementById('setupOverlay').classList.remove('hidden');updateAddMoreBar(false);}else{document.getElementById('setupOverlay').classList.add('hidden');updateAddMoreBar(true);} }
+
+    function buildBoxSelect() {
+        const avail=Math.min(10,100-Object.keys(gridData).length); const sel=document.getElementById('boxCountSelect'); sel.innerHTML='';
+        const cost=currentGameConfig?.costPerSquare||0;
+        for(let i=1;i<=Math.max(avail,1);i++){const o=document.createElement('option');o.value=i;o.textContent=cost>0?`${i} box${i>1?'es':''} — $${i*cost}`:`${i} box${i>1?'es':''}`;sel.appendChild(o);}
+        sel.value=Math.min(5,avail); updateCost(); sel.onchange=updateCost;
+        document.getElementById('costHelper').innerHTML=cost>0?`$${cost} per box \u2022 Total: <strong id="costPreview">$${Math.min(5,avail)*cost}</strong>`:'Free pool \u2022 <strong id="costPreview">No cost</strong>';
+    }
+    function updateCost() { const n=parseInt(document.getElementById('boxCountSelect').value)||0; const c=currentGameConfig?.costPerSquare||0; const el=document.getElementById('costPreview'); if(el) el.textContent=c>0?`$${n*c}`:'Free'; }
+
+    function setPickMethod(method) {
+        pickMethod=method; const a=document.getElementById('pickAuto'),m=document.getElementById('pickManual');
+        if(method==='auto'){a.style.background='linear-gradient(135deg,var(--gold),var(--gold-dim))';a.style.color='#1a1a1a';a.style.border='none';m.style.background='var(--bg-tertiary)';m.style.color='var(--text-secondary)';m.style.border='1px solid rgba(255,255,255,0.15)';document.getElementById('claimBtn').textContent='Claim Boxes';}
+        else{m.style.background='linear-gradient(135deg,var(--gold),var(--gold-dim))';m.style.color='#1a1a1a';m.style.border='none';a.style.background='var(--bg-tertiary)';a.style.color='var(--text-secondary)';a.style.border='1px solid rgba(255,255,255,0.15)';document.getElementById('claimBtn').textContent='Pick on Grid \u2192';}
+    }
+
+    async function claimBoxes() {
+        const init=document.getElementById('initialsInput').value.trim().toUpperCase(); const count=parseInt(document.getElementById('boxCountSelect').value); const err=document.getElementById('initialsError'); err.style.display='none';
+        if(init.length<2||init.length>3){showValidationError('Enter 2-3 letter initials first!');return;} if(!/^[A-Z]+$/.test(init)){showValidationError('Letters only');return;}
+        for(const uid in playersData){if(playersData[uid].initials===init){showValidationError(`"${init}" is taken`);return;}}
+        const avail=[]; for(let r=0;r<10;r++)for(let c=0;c<10;c++){const k=`${r}_${c}`;if(!gridData[k])avail.push(k);} if(avail.length<count){showToast('Not enough boxes!');return;}
+        if(pickMethod==='manual'){manualSelectMode=true;manualInitials=init;manualBoxTarget=count;manualPicks=[];document.getElementById('setupOverlay').classList.add('hidden');switchTab('grid');updateSelectBanner();document.getElementById('selectBanner').classList.remove('hidden');renderGrid();showToast(`Tap ${count} box${count>1?'es':''}`);return;}
+        const picks=[...avail].sort(()=>Math.random()-0.5).slice(0,count); const btn=document.getElementById('claimBtn'); btn.disabled=true; btn.innerHTML='<span class="spinner"></span> Claiming...';
+        try{const up={};up[gRef(`players/${currentUser.uid}`)]={name:currentUser.displayName||currentUser.email,initials:init,boxCount:count,email:currentUser.email};picks.forEach(k=>{up[gRef(`grid/${k}`)]={uid:currentUser.uid,initials:init,name:currentUser.displayName||currentUser.email};});up[`${GAME_REF}/users/${currentUser.uid}/games/${currentGameId}`]=true;await db.ref().update(up);document.getElementById('setupOverlay').classList.add('hidden');showToast(`Claimed ${count} box${count>1?'es':''}! \ud83c\udfc8`);}catch(e){showToast('Error: '+e.message);}finally{btn.disabled=false;btn.textContent='Claim Boxes';}
     }
 
     // ══════════════════════════════════════════════════
     //  MANUAL SELECTION
     // ══════════════════════════════════════════════════
     function updateSelectBanner() {
-        const remaining = manualBoxTarget - manualPicks.length;
-        const bannerInfo = document.querySelector('.select-info');
-        const confirmBtn = document.getElementById('confirmSelectBtn');
-        if (!bannerInfo || !confirmBtn) return;
-
-        confirmBtn.disabled = manualPicks.length !== manualBoxTarget;
-
-        if (isAddMoreMode && remaining > 0) {
-            bannerInfo.innerHTML = `Adding boxes — tap <strong>${remaining}</strong> more box${remaining !== 1 ? 'es' : ''} for <strong>${esc(manualInitials)}</strong> <span style="font-size:0.75rem;color:var(--text-muted);">(${addMoreOriginalCount} current + ${manualBoxTarget} new = ${addMoreOriginalCount + manualBoxTarget} total)</span>`;
-        } else if (isAddMoreMode && remaining === 0) {
-            bannerInfo.innerHTML = `All <strong>${manualBoxTarget}</strong> new box${manualBoxTarget !== 1 ? 'es' : ''} selected for <strong>${esc(manualInitials)}</strong> <span style="font-size:0.75rem;color:var(--text-muted);">(${addMoreOriginalCount + manualBoxTarget} total)</span>`;
-        } else if (remaining === 0) {
-            bannerInfo.innerHTML = `All <strong>${manualBoxTarget}</strong> box${manualBoxTarget !== 1 ? 'es' : ''} selected for <strong>${esc(manualInitials)}</strong> — tap Done!`;
-        } else {
-            bannerInfo.innerHTML = `Tap <strong>${remaining}</strong> more box${remaining !== 1 ? 'es' : ''} to place your <strong>${esc(manualInitials)}</strong>`;
-        }
+        const rem=manualBoxTarget-manualPicks.length; const info=document.querySelector('.select-info'); const btn=document.getElementById('confirmSelectBtn'); if(!info||!btn)return;
+        btn.disabled=manualPicks.length!==manualBoxTarget;
+        if(rem===0) info.innerHTML=`All <strong>${manualBoxTarget}</strong> box${manualBoxTarget!==1?'es':''} selected for <strong>${esc(manualInitials)}</strong> \u2014 tap Done!`;
+        else info.innerHTML=`Tap <strong>${rem}</strong> more box${rem!==1?'es':''} to place your <strong>${esc(manualInitials)}</strong>`;
     }
-
-    function handleCellTap(row, col) {
-        if (!manualSelectMode) return;
-        const k = `${row}_${col}`;
-
-        // Un-pick
-        const idx = manualPicks.indexOf(k);
-        if (idx !== -1) {
-            manualPicks.splice(idx, 1);
-            playUndoSound();
-            updateSelectBanner();
-            renderGrid();
-            return;
-        }
-
-        if (gridData[k]) { showToast('That box is already taken!'); return; }
-        if (manualPicks.length >= manualBoxTarget) {
-            showToast('All boxes selected! Tap Done or tap a selected box to change it.');
-            return;
-        }
-
-        manualPicks.push(k);
-        updateSelectBanner();
-        renderGrid();
-
-        if (navigator.vibrate) navigator.vibrate(30);
-
-        // Check if this was the LAST box
-        if (manualPicks.length === manualBoxTarget) {
-            playCompletionSound();
-            showToast('✅ All boxes filled! Tap Done to confirm.', 4000, 'toast-complete');
-        } else {
-            playTapSound();
-        }
+    function handleCellTap(row,col) {
+        if(!manualSelectMode)return;const k=`${row}_${col}`;const idx=manualPicks.indexOf(k);
+        if(idx!==-1){manualPicks.splice(idx,1);playUndoSound();updateSelectBanner();renderGrid();return;}
+        if(gridData[k]){showToast('Already taken!');return;} if(manualPicks.length>=manualBoxTarget){showToast('All selected! Tap Done.');return;}
+        manualPicks.push(k);updateSelectBanner();renderGrid();if(navigator.vibrate)navigator.vibrate(30);
+        if(manualPicks.length===manualBoxTarget){playCompletionSound();showToast('\u2705 All filled! Tap Done.',4000,'toast-complete');}else playTapSound();
     }
-
     async function confirmManualSelection() {
-        if (manualPicks.length !== manualBoxTarget) return;
-        const btn = document.getElementById('confirmSelectBtn');
-        btn.disabled = true; btn.textContent = '...';
-        try {
-            const up = {};
-            // Determine which user we're acting as
-            const targetUid = adminActingAsUid || currentUser.uid;
-            const targetName = adminActingAsData ? adminActingAsData.name : (currentUser.displayName || currentUser.email);
-            const targetEmail = adminActingAsData ? (adminActingAsData.email || '') : currentUser.email;
-            const newTotalBoxes = isAddMoreMode ? (addMoreOriginalCount + manualBoxTarget) : manualBoxTarget;
+        if(manualPicks.length!==manualBoxTarget)return; const btn=document.getElementById('confirmSelectBtn'); btn.disabled=true; btn.textContent='...';
+        try{const up={};const tUid=adminActingAsUid||currentUser.uid;const tName=adminActingAsData?adminActingAsData.name:(currentUser.displayName||currentUser.email);const tEmail=adminActingAsData?(adminActingAsData.email||''):currentUser.email;const total=isAddMoreMode?(addMoreOriginalCount+manualBoxTarget):manualBoxTarget;
+        up[gRef(`players/${tUid}`)]={name:tName,initials:manualInitials,boxCount:total,email:tEmail};manualPicks.forEach(k=>{up[gRef(`grid/${k}`)]={uid:tUid,initials:manualInitials,name:tName};});up[`${GAME_REF}/users/${tUid}/games/${currentGameId}`]=true;await db.ref().update(up);showToast(`Claimed ${manualBoxTarget} box${manualBoxTarget>1?'es':''}! \ud83c\udfc8`);}catch(e){showToast('Error: '+e.message);}
+        finally{manualSelectMode=false;manualPicks=[];isAddMoreMode=false;addMoreOriginalCount=0;adminActingAsUid=null;adminActingAsData=null;document.getElementById('selectBanner').classList.add('hidden');btn.disabled=false;btn.textContent='Done';renderGrid();}
+    }
+    function cancelManualSelection() { manualSelectMode=false;manualPicks=[];isAddMoreMode=false;addMoreOriginalCount=0;adminActingAsUid=null;adminActingAsData=null;document.getElementById('selectBanner').classList.add('hidden');renderGrid();if(!playersData[currentUser.uid])document.getElementById('setupOverlay').classList.remove('hidden'); }
 
-            up[`${GAME_REF}/players/${targetUid}`] = { name: targetName, initials: manualInitials, boxCount: newTotalBoxes, email: targetEmail };
-            manualPicks.forEach(k => { up[`${GAME_REF}/grid/${k}`] = { uid: targetUid, initials: manualInitials, name: targetName }; });
-            await db.ref().update(up);
+    // ══════════════════════════════════════════════════
+    //  ADD MORE BOXES (for existing players)
+    // ══════════════════════════════════════════════════
+    function updateAddMoreBar(show) {
+        const bar = document.getElementById('addMoreBar');
+        if (!bar) return;
+        const gridFull = Object.keys(gridData).length >= 100;
+        if (!show || gridFull) { bar.classList.add('hidden'); return; }
+        bar.classList.remove('hidden');
+        const me = playersData[currentUser.uid];
+        if (!me) { bar.classList.add('hidden'); return; }
+        document.getElementById('addMoreCurrent').textContent = me.boxCount || 0;
+        // Build count select
+        const avail = Math.min(10, 100 - Object.keys(gridData).length);
+        const sel = document.getElementById('addMoreCount');
+        const curVal = parseInt(sel.value) || 1;
+        sel.innerHTML = '';
+        for (let i = 1; i <= Math.max(avail, 1); i++) {
+            const o = document.createElement('option');
+            o.value = i; o.textContent = i; sel.appendChild(o);
+        }
+        sel.value = Math.min(curVal, avail || 1);
+        sel.disabled = avail <= 0;
+        document.getElementById('addMoreAutoBtn').disabled = avail <= 0;
+        updateAddMoreHint();
+    }
 
-            if (isAddMoreMode) {
-                showToast(`Added ${manualBoxTarget} box${manualBoxTarget > 1 ? 'es' : ''} for ${targetName.split(' ')[0]}! Now at ${newTotalBoxes} total 🏈`);
-            } else {
-                showToast(`Claimed ${manualBoxTarget} box${manualBoxTarget > 1 ? 'es' : ''}! 🏈`);
-            }
-        } catch (e) { showToast('Error: ' + e.message); }
-        finally {
-            manualSelectMode = false; manualPicks = [];
-            isAddMoreMode = false; addMoreOriginalCount = 0;
-            adminActingAsUid = null; adminActingAsData = null;
-            document.getElementById('selectBanner').classList.add('hidden');
-            btn.disabled = false; btn.textContent = 'Done';
-            renderGrid();
+    function updateAddMoreHint() {
+        const cost = currentGameConfig?.costPerSquare || 0;
+        const count = parseInt(document.getElementById('addMoreCount')?.value) || 1;
+        const hint = document.getElementById('addMoreCostHint');
+        if (!hint) return;
+        if (cost > 0) {
+            hint.textContent = `+${count} = $${count * cost} more`;
+        } else {
+            hint.textContent = `Add ${count} more box${count > 1 ? 'es' : ''}`;
         }
     }
 
-    function cancelManualSelection() {
-        manualSelectMode = false; manualPicks = [];
-        isAddMoreMode = false; addMoreOriginalCount = 0;
-        adminActingAsUid = null; adminActingAsData = null;
-        document.getElementById('selectBanner').classList.add('hidden');
-        renderGrid();
-        if (!playersData[currentUser.uid]) document.getElementById('setupOverlay').classList.remove('hidden');
+    async function startAddMore(method) {
+        const me = playersData[currentUser.uid];
+        if (!me) return;
+        const addCount = parseInt(document.getElementById('addMoreCount').value) || 1;
+        const avail = [];
+        for (let r = 0; r < 10; r++) for (let c = 0; c < 10; c++) { const k = `${r}_${c}`; if (!gridData[k]) avail.push(k); }
+        if (avail.length < addCount) { showToast('Not enough boxes available!'); return; }
+
+        if (method === 'manual') {
+            // Enter manual pick mode
+            isAddMoreMode = true;
+            addMoreOriginalCount = me.boxCount;
+            manualSelectMode = true;
+            manualInitials = me.initials;
+            manualBoxTarget = addCount;
+            manualPicks = [];
+            updateSelectBanner();
+            document.getElementById('selectBanner').classList.remove('hidden');
+            document.getElementById('addMoreBar').classList.add('hidden');
+            renderGrid();
+            document.getElementById('selectBanner').scrollIntoView({ behavior: 'smooth', block: 'start' });
+            showToast(`Tap ${addCount} box${addCount > 1 ? 'es' : ''} on the grid`);
+        } else {
+            // Auto-assign
+            const picks = [...avail].sort(() => Math.random() - 0.5).slice(0, addCount);
+            const newTotal = me.boxCount + addCount;
+            try {
+                const up = {};
+                up[gRef(`players/${currentUser.uid}`)] = { ...me, boxCount: newTotal };
+                picks.forEach(k => { up[gRef(`grid/${k}`)] = { uid: currentUser.uid, initials: me.initials, name: me.name }; });
+                await db.ref().update(up);
+                showToast(`Added ${addCount} box${addCount > 1 ? 'es' : ''}! Now at ${newTotal} total 🏈`);
+            } catch (e) { showToast('Error: ' + e.message); }
+        }
     }
 
     // ══════════════════════════════════════════════════
     //  GRID
     // ══════════════════════════════════════════════════
     function renderGrid() {
-        const tbl = document.getElementById('squaresGrid');
-        const winners = getWinnerCells();
-        let h = '<tr><th class="corner-cell"></th>';
-        for (let c = 0; c < 10; c++) {
-            h += `<th class="col-header${numbersAssigned?' has-number':''}">${numbersAssigned ? colNumbers[c] : '?'}</th>`;
-        }
-        h += '</tr>';
-        for (let r = 0; r < 10; r++) {
-            h += `<tr><th class="row-header${numbersAssigned?' has-number':''}">${numbersAssigned ? rowNumbers[r] : '?'}</th>`;
-            for (let c = 0; c < 10; c++) {
-                const k = `${r}_${c}`, d = gridData[k], w = winners.includes(k);
-                const isPendingPick = manualSelectMode && manualPicks.includes(k);
-                if (isPendingPick) {
-                    h += `<td class="cell just-selected" onclick="handleCellTap(${r},${c})" title="Tap to remove">${esc(manualInitials)}</td>`;
-                } else if (d) {
-                    const mine = currentUser && d.uid === currentUser.uid;
-                    let cls = mine ? 'cell mine' : 'cell taken';
-                    if (w) cls += ' winner-cell';
-                    h += `<td class="${cls}" title="${esc(d.name)}">${esc(d.initials)}</td>`;
-                } else if (manualSelectMode) {
-                    h += `<td class="cell selectable" onclick="handleCellTap(${r},${c})"></td>`;
-                } else {
-                    h += '<td class="cell empty"></td>';
-                }
-            }
-            h += '</tr>';
-        }
-        tbl.innerHTML = h;
+        const tbl=document.getElementById('squaresGrid');if(!tbl)return;const w=getWinnerCells();
+        let h='<tr><th class="corner-cell"></th>';for(let c=0;c<10;c++)h+=`<th class="col-header${numbersAssigned?' has-number':''}">${numbersAssigned?colNumbers[c]:'?'}</th>`;h+='</tr>';
+        for(let r=0;r<10;r++){h+=`<tr><th class="row-header${numbersAssigned?' has-number':''}">${numbersAssigned?rowNumbers[r]:'?'}</th>`;
+        for(let c=0;c<10;c++){const k=`${r}_${c}`,d=gridData[k],wn=w.includes(k),pp=manualSelectMode&&manualPicks.includes(k);
+        if(pp)h+=`<td class="cell just-selected" onclick="handleCellTap(${r},${c})">${esc(manualInitials)}</td>`;
+        else if(d){const mine=currentUser&&d.uid===currentUser.uid;let cls=mine?'cell mine':'cell taken';if(wn)cls+=' winner-cell';h+=`<td class="${cls}" title="${esc(d.name)}">${esc(d.initials)}</td>`;}
+        else if(manualSelectMode)h+=`<td class="cell selectable" onclick="handleCellTap(${r},${c})"></td>`;
+        else h+='<td class="cell empty"></td>';}h+='</tr>';}tbl.innerHTML=h;
     }
-
-    function getWinnerCells() {
-        if (!numbersAssigned) return [];
-        const cells = [];
-        ['q1','q2','q3','q4'].forEach(q => {
-            const s = scores[q];
-            if (s && s.pats !== undefined && s.hawks !== undefined) {
-                const ci = colNumbers.indexOf(parseInt(s.pats));
-                const ri = rowNumbers.indexOf(parseInt(s.hawks));
-                if (ci !== -1 && ri !== -1) cells.push(`${ri}_${ci}`);
-            }
-        });
-        return cells;
-    }
-
-    function updateGridInfo() {
-        const n = Object.keys(gridData).length;
-        document.getElementById('claimedCount').textContent = n;
-        document.getElementById('boxesLeftText').textContent = n < 100 ? `${100 - n} remaining` : '✓ GRID FULL';
-    }
+    function getWinnerCells(){if(!numbersAssigned)return[];const cells=[];['q1','q2','q3','q4'].forEach(q=>{const s=scores[q];if(s&&s.pats!==undefined&&s.hawks!==undefined){const ci=colNumbers.indexOf(parseInt(s.pats)),ri=rowNumbers.indexOf(parseInt(s.hawks));if(ci!==-1&&ri!==-1)cells.push(`${ri}_${ci}`);}});return cells;}
+    function updateGridInfo(){const n=Object.keys(gridData).length;const e1=document.getElementById('claimedCount'),e2=document.getElementById('boxesLeftText');if(e1)e1.textContent=n;if(e2)e2.textContent=n<100?`${100-n} remaining`:'\u2713 GRID FULL';}
 
     // ══════════════════════════════════════════════════
     //  NUMBERS
     // ══════════════════════════════════════════════════
-    function updateNumbersUI() {
-        const st = document.getElementById('numbersStatus'), pr = document.getElementById('numbersPreview');
-        const ab = document.getElementById('assignNumbersBtn'), cb = document.getElementById('clearNumbersBtn');
-        if (numbersAssigned) {
-            st.textContent = 'Numbers have been assigned!';
-            pr.classList.remove('hidden');
-            document.getElementById('colNumbersPreview').innerHTML = colNumbers.map(n => `<span class="num-chip">${n}</span>`).join('');
-            document.getElementById('rowNumbersPreview').innerHTML = rowNumbers.map(n => `<span class="num-chip">${n}</span>`).join('');
-            ab.classList.add('hidden'); cb.classList.remove('hidden');
-        } else {
-            const cnt = Object.keys(gridData).length;
-            st.textContent = cnt < 100 ? `Waiting for grid to fill (${cnt}/100)` : 'Grid full — ready to assign!';
-            ab.disabled = cnt < 100;
-            pr.classList.add('hidden'); ab.classList.remove('hidden'); cb.classList.add('hidden');
-        }
-    }
-
-    async function assignNumbers() {
-        if (!await showConfirm('Assign random numbers? This determines winners.')) return;
-        await db.ref(`${GAME_REF}/numbers`).set({ cols: shuffle([0,1,2,3,4,5,6,7,8,9]), rows: shuffle([0,1,2,3,4,5,6,7,8,9]) });
-        showToast('Numbers assigned!');
-    }
-    async function clearNumbers() {
-        if (!await showConfirm('Clear numbers?')) return;
-        await db.ref(`${GAME_REF}/numbers`).remove();
-        showToast('Numbers cleared');
-    }
-    function shuffle(a) { const b=[...a]; for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];} return b; }
+    function updateNumbersUI(){const st=document.getElementById('numbersStatus'),pr=document.getElementById('numbersPreview'),ab=document.getElementById('assignNumbersBtn'),cb=document.getElementById('clearNumbersBtn');if(!st)return;if(numbersAssigned){st.textContent='Numbers assigned!';pr.classList.remove('hidden');document.getElementById('colNumbersPreview').innerHTML=colNumbers.map(n=>`<span class="num-chip">${n}</span>`).join('');document.getElementById('rowNumbersPreview').innerHTML=rowNumbers.map(n=>`<span class="num-chip">${n}</span>`).join('');ab.classList.add('hidden');cb.classList.remove('hidden');}else{const cnt=Object.keys(gridData).length;st.textContent=cnt<100?`Waiting for grid to fill (${cnt}/100)`:'Grid full \u2014 ready!';ab.disabled=cnt<100;pr.classList.add('hidden');ab.classList.remove('hidden');cb.classList.add('hidden');}}
+    async function assignNumbers(){if(!await showConfirm('Assign random numbers?'))return;await db.ref(gRef('numbers')).set({cols:shuffle([0,1,2,3,4,5,6,7,8,9]),rows:shuffle([0,1,2,3,4,5,6,7,8,9])});showToast('Numbers assigned!');}
+    async function clearNumbers(){if(!await showConfirm('Clear numbers?'))return;await db.ref(gRef('numbers')).remove();showToast('Numbers cleared');}
+    function shuffle(a){const b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b;}
 
     // ══════════════════════════════════════════════════
     //  SCORES
     // ══════════════════════════════════════════════════
-    function buildScoreInputs() {
-        const c = document.getElementById('scoreInputs'); if (!c) return;
-        const opts = '<option value="">-</option>' + [0,1,2,3,4,5,6,7,8,9].map(n => `<option value="${n}">${n}</option>`).join('');
-        c.innerHTML = ['Q1','Q2','Q3','Q4'].map((q,i) => `
-            <div class="score-input-group"><label>${q}</label>
-                <div class="score-pair">
-                    <div style="flex:1"><select id="sp${i}">${opts}</select><div class="team-label">PAT</div></div>
-                    <div style="flex:1"><select id="sh${i}">${opts}</select><div class="team-label">SEA</div></div>
-                </div>
-            </div>`).join('');
-    }
-    function populateScoreInputs() {
-        ['q1','q2','q3','q4'].forEach((q,i) => {
-            const s = scores[q], p = document.getElementById(`sp${i}`), h = document.getElementById(`sh${i}`);
-            if (p && h) { p.value = s?.pats !== undefined ? s.pats : ''; h.value = s?.hawks !== undefined ? s.hawks : ''; }
-        });
-    }
-    async function saveScores() {
-        const ns = {};
-        ['q1','q2','q3','q4'].forEach((q,i) => {
-            const p = document.getElementById(`sp${i}`).value, h = document.getElementById(`sh${i}`).value;
-            ns[q] = (p !== '' && h !== '') ? { pats: +p, hawks: +h } : null;
-        });
-        const newWinners = [];
-        if (numbersAssigned) {
-            ['q1','q2','q3','q4'].forEach((q, i) => {
-                const oldS = scores[q]; const newS = ns[q];
-                const hadScore = oldS && oldS.pats !== undefined && oldS.hawks !== undefined;
-                const hasScore = newS && newS.pats !== undefined && newS.hawks !== undefined;
-                if (hasScore && !hadScore) {
-                    const ci = colNumbers.indexOf(newS.pats); const ri = rowNumbers.indexOf(newS.hawks);
-                    if (ci !== -1 && ri !== -1) {
-                        const cellData = gridData[`${ri}_${ci}`];
-                        if (cellData) newWinners.push({ quarter: ['Q1','Q2','Q3','Q4'][i], name: cellData.name, initials: cellData.initials, pats: newS.pats, hawks: newS.hawks });
-                    }
+    function buildScoreInputs(){const c=document.getElementById('scoreInputs');if(!c)return;const opts='<option value="">-</option>'+[0,1,2,3,4,5,6,7,8,9].map(n=>`<option value="${n}">${n}</option>`).join('');c.innerHTML=['Q1','Q2','Q3','Q4'].map((q,i)=>`<div class="score-input-group"><label>${q}</label><div class="score-pair"><div style="flex:1"><select id="sp${i}">${opts}</select><div class="team-label">PAT</div></div><div style="flex:1"><select id="sh${i}">${opts}</select><div class="team-label">SEA</div></div></div></div>`).join('');}
+    function populateScoreInputs(){['q1','q2','q3','q4'].forEach((q,i)=>{const s=scores[q],p=document.getElementById(`sp${i}`),h=document.getElementById(`sh${i}`);if(p&&h){p.value=s?.pats!==undefined?s.pats:'';h.value=s?.hawks!==undefined?s.hawks:'';}});}
+    async function saveScores(){const ns={};['q1','q2','q3','q4'].forEach((q,i)=>{const p=document.getElementById(`sp${i}`).value,h=document.getElementById(`sh${i}`).value;ns[q]=(p!==''&&h!=='')?{pats:+p,hawks:+h}:null;});
+    const nw=[];if(numbersAssigned){['q1','q2','q3','q4'].forEach((q,i)=>{const os=scores[q],ns2=ns[q];const had=os&&os.pats!==undefined;const has=ns2&&ns2.pats!==undefined;if(has&&!had){const ci=colNumbers.indexOf(ns2.pats),ri=rowNumbers.indexOf(ns2.hawks);if(ci!==-1&&ri!==-1){const cd=gridData[`${ri}_${ci}`];if(cd)nw.push({quarter:['Q1','Q2','Q3','Q4'][i],name:cd.name,initials:cd.initials,pats:ns2.pats,hawks:ns2.hawks});}}});}
+    await db.ref(gRef('scores')).set(ns);if(nw.length>0){celebrationQueue=[...nw];showNextCelebration();}else showToast('Scores saved!');}
+
+    function renderQuarters() {
+        const el = document.getElementById('quarterResults');
+        if (!el) return;
+        const cost = currentGameConfig?.costPerSquare || 0;
+        const pot = cost * 100;
+        const payouts = currentGameConfig?.payouts || { q1: 25, q2: 25, q3: 25, q4: 25 };
+
+        el.innerHTML = [{k:'q1',l:'Q1'},{k:'q2',l:'Q2'},{k:'q3',l:'Q3'},{k:'q4',l:'Q4'}].map(q => {
+            const s = scores[q.k];
+            const pct = payouts[q.k] || 25;
+            const prize = pot > 0 ? `$${Math.round(pot * pct / 100)}` : `${pct}%`;
+            let st='—',bt='',wt='TBD',wc='none';
+            if (s && s.pats !== undefined) {
+                st = `PAT: ${s.pats}  SEA: ${s.hawks}`;
+                if (numbersAssigned) {
+                    const pd=+s.pats, hd=+s.hawks; bt = `(${pd}, ${hd})`;
+                    const d = gridData[`${rowNumbers.indexOf(hd)}_${colNumbers.indexOf(pd)}`];
+                    if (d) { wt = `🏆 ${esc(d.initials)} — ${esc(d.name.split(' ')[0])}`; wc = ''; }
+                    else wt = 'Empty box';
                 }
-            });
-        }
-        await db.ref(`${GAME_REF}/scores`).set(ns);
-        if (newWinners.length > 0) { celebrationQueue = [...newWinners]; showNextCelebration(); }
-        else showToast('Scores saved!');
+            } else if (!numbersAssigned) wt = 'Numbers not set';
+            return `<div class="q-card"><div class="q-label">${q.l}</div><div class="q-score">${st}</div><div class="q-box">${bt}</div><div class="q-winner ${wc}">${wt}</div><div class="q-prize">${prize}</div></div>`;
+        }).join('');
     }
 
     // ══════════════════════════════════════════════════
-    //  CELEBRATION SYSTEM
+    //  PLAYERS
+    // ══════════════════════════════════════════════════
+    function renderPlayers() {
+        const entries = Object.entries(playersData);
+        const noMsg = document.getElementById('noPlayersMsg');
+        const wrap = document.getElementById('playerTableWrap');
+        if (noMsg) noMsg.classList.toggle('hidden', entries.length > 0);
+        if (wrap) wrap.classList.toggle('hidden', entries.length === 0);
+        if (!entries.length) return;
+
+        const cost = currentGameConfig?.costPerSquare || 0;
+        const pot = cost * 100;
+        const payouts = currentGameConfig?.payouts || { q1: 25, q2: 25, q3: 25, q4: 25 };
+
+        document.getElementById('playerTableBody').innerHTML = entries
+            .map(([uid, d]) => ({ uid, name: d.name||'?', initials: d.initials, cnt: d.boxCount||0, win: calcWin(uid, pot, payouts) }))
+            .sort((a,b) => b.cnt - a.cnt)
+            .map(p => {
+                const me = currentUser && p.uid === currentUser.uid;
+                const costStr = cost > 0 ? `$${p.cnt * cost}` : '—';
+                const winStr = p.win > 0 ? `$${p.win}` : (cost > 0 ? '$0' : '—');
+                return `<tr class="${me?'is-me':''}"><td>${esc(p.name.split(' ')[0])}${me?' (you)':''}</td><td><span class="initials-badge">${esc(p.initials)}</span></td><td>${p.cnt}</td><td>${costStr}</td><td class="winnings ${p.win?'':'zero'}">${winStr}</td></tr>`;
+            }).join('');
+
+        if (isGameAdmin) buildManagePlayerSelect();
+    }
+
+    function calcWin(uid, pot, payouts) {
+        if (!numbersAssigned || !pot) return 0;
+        let t = 0;
+        ['q1','q2','q3','q4'].forEach(q => {
+            const s = scores[q];
+            if (s?.pats !== undefined) {
+                const d = gridData[`${rowNumbers.indexOf(+s.hawks)}_${colNumbers.indexOf(+s.pats)}`];
+                if (d?.uid === uid) t += Math.round(pot * (payouts[q] || 25) / 100);
+            }
+        });
+        return t;
+    }
+
+    // ══════════════════════════════════════════════════
+    //  ADMIN: MANAGE PLAYERS
+    // ══════════════════════════════════════════════════
+    function buildManagePlayerSelect() {
+        const sel = document.getElementById('managePlayerSelect');
+        if (!sel) return;
+        const curVal = sel.value;
+        sel.innerHTML = '<option value="">— Select player —</option>';
+        Object.entries(playersData)
+            .sort((a, b) => (a[1].name || '').localeCompare(b[1].name || ''))
+            .forEach(([uid, d]) => {
+                const o = document.createElement('option');
+                o.value = uid;
+                o.textContent = `${d.name || '?'} (${d.initials}) — ${d.boxCount} boxes`;
+                sel.appendChild(o);
+            });
+        if (curVal && playersData[curVal]) sel.value = curVal;
+        buildManageAddCountSelect();
+        updateManagePlayerInfo();
+    }
+
+    function buildManageAddCountSelect() {
+        const gridUsed = Object.keys(gridData).length;
+        const avail = Math.min(10, 100 - gridUsed);
+        const sel = document.getElementById('manageAddCount');
+        if (!sel) return;
+        const curVal = parseInt(sel.value) || 1;
+        sel.innerHTML = '';
+        for (let i = 1; i <= Math.max(avail, 1); i++) {
+            const o = document.createElement('option');
+            o.value = i; o.textContent = i;
+            sel.appendChild(o);
+        }
+        sel.value = Math.min(curVal, avail || 1);
+        sel.disabled = avail <= 0;
+    }
+
+    function updateManagePlayerInfo() {
+        const uid = document.getElementById('managePlayerSelect')?.value;
+        const info = document.getElementById('managePlayerInfo');
+        const btn = document.getElementById('adminAddBoxesBtn');
+        if (!uid || !playersData[uid]) { if(info) info.textContent = ''; if(btn) btn.disabled = true; return; }
+        const p = playersData[uid];
+        const addCount = parseInt(document.getElementById('manageAddCount')?.value) || 1;
+        const avail = 100 - Object.keys(gridData).length;
+        if (avail <= 0) {
+            info.innerHTML = `<strong>${esc(p.name)}</strong> has ${p.boxCount} boxes. <span style="color:var(--danger);">Grid is full.</span>`;
+            btn.disabled = true;
+        } else {
+            info.innerHTML = `<strong>${esc(p.name)}</strong> has ${p.boxCount} → will have <strong>${p.boxCount + addCount}</strong>. (${avail} open)`;
+            btn.disabled = false;
+        }
+    }
+
+    function adminAddBoxes() {
+        const uid = document.getElementById('managePlayerSelect').value;
+        const errEl = document.getElementById('managePlayerError');
+        errEl.style.display = 'none';
+        if (!uid || !playersData[uid]) { errEl.textContent = 'Select a player first'; errEl.style.display = 'block'; return; }
+        const p = playersData[uid];
+        const addCount = parseInt(document.getElementById('manageAddCount').value) || 1;
+        const avail = 100 - Object.keys(gridData).length;
+        if (addCount > avail) { errEl.textContent = `Only ${avail} box${avail !== 1 ? 'es' : ''} available`; errEl.style.display = 'block'; return; }
+
+        isAddMoreMode = true; addMoreOriginalCount = p.boxCount;
+        adminActingAsUid = uid; adminActingAsData = p;
+        manualSelectMode = true; manualInitials = p.initials; manualBoxTarget = addCount; manualPicks = [];
+
+        switchTab('grid');
+        updateSelectBanner();
+        document.getElementById('selectBanner').classList.remove('hidden');
+        renderGrid();
+        document.getElementById('selectBanner').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        showToast(`Admin: pick ${addCount} box${addCount > 1 ? 'es' : ''} for ${p.name}`);
+    }
+
+    // ══════════════════════════════════════════════════
+    //  ADMIN RESET
+    // ══════════════════════════════════════════════════
+    async function resetGrid() {
+        if (!await showConfirm('Delete ALL data for this grid? Squares, players, numbers, scores?')) return;
+        if (!await showConfirm('REALLY sure? Cannot be undone.')) return;
+        await db.ref(`${GAME_REF}/games/${currentGameId}/grid`).remove();
+        await db.ref(`${GAME_REF}/games/${currentGameId}/players`).remove();
+        await db.ref(`${GAME_REF}/games/${currentGameId}/numbers`).remove();
+        await db.ref(`${GAME_REF}/games/${currentGameId}/scores`).remove();
+        showToast('Grid reset');
+    }
+
+    // ══════════════════════════════════════════════════
+    //  CELEBRATION
     // ══════════════════════════════════════════════════
     function showNextCelebration() {
         if (celebrationQueue.length === 0) { dismissCelebration(); return; }
@@ -1167,6 +1611,13 @@
         document.getElementById('winName').textContent = w.name.split(' ')[0];
         document.getElementById('winInitials').textContent = w.initials;
         document.getElementById('winScore').textContent = `PAT: ${w.pats}  •  SEA: ${w.hawks}`;
+        // Calculate prize
+        const cost = currentGameConfig?.costPerSquare || 0;
+        const pot = cost * 100;
+        const payouts = currentGameConfig?.payouts || { q1: 25, q2: 25, q3: 25, q4: 25 };
+        const qKey = w.quarter.toLowerCase();
+        const prize = pot > 0 ? `$${Math.round(pot * (payouts[qKey] || 25) / 100)}` : '🏆';
+        document.getElementById('winPrize').textContent = prize;
         document.getElementById('winnerOverlay').classList.remove('hidden');
         startConfetti(); playVictorySound();
     }
@@ -1175,49 +1626,6 @@
         document.getElementById('winnerOverlay').classList.add('hidden');
         stopConfetti();
         if (celebrationQueue.length > 0) setTimeout(showNextCelebration, 400);
-    }
-
-    function playVictorySound() {
-        try {
-            const ctx = getAudioCtx();
-            const notes = [
-                { freq: 523.25, start: 0,    dur: 0.15 },
-                { freq: 659.25, start: 0.12, dur: 0.15 },
-                { freq: 783.99, start: 0.24, dur: 0.15 },
-                { freq: 1046.5, start: 0.38, dur: 0.4  },
-                { freq: 783.99, start: 0.38, dur: 0.4  },
-                { freq: 659.25, start: 0.38, dur: 0.4  },
-            ];
-            const now = ctx.currentTime;
-            notes.forEach(n => {
-                const osc = ctx.createOscillator(); const gain = ctx.createGain();
-                osc.type = 'square'; osc.frequency.value = n.freq;
-                gain.gain.setValueAtTime(0, now + n.start);
-                gain.gain.linearRampToValueAtTime(0.12, now + n.start + 0.02);
-                gain.gain.exponentialRampToValueAtTime(0.001, now + n.start + n.dur);
-                osc.connect(gain); gain.connect(ctx.destination);
-                osc.start(now + n.start); osc.stop(now + n.start + n.dur + 0.05);
-                const osc2 = ctx.createOscillator(); const gain2 = ctx.createGain();
-                osc2.type = 'sawtooth'; osc2.frequency.value = n.freq;
-                gain2.gain.setValueAtTime(0, now + n.start);
-                gain2.gain.linearRampToValueAtTime(0.04, now + n.start + 0.02);
-                gain2.gain.exponentialRampToValueAtTime(0.001, now + n.start + n.dur);
-                osc2.connect(gain2); gain2.connect(ctx.destination);
-                osc2.start(now + n.start); osc2.stop(now + n.start + n.dur + 0.05);
-            });
-            const bufferSize = ctx.sampleRate * 0.6;
-            const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
-            const data = buffer.getChannelData(0);
-            for (let i = 0; i < bufferSize; i++) data[i] = (Math.random() * 2 - 1);
-            const noise = ctx.createBufferSource(); noise.buffer = buffer;
-            const noiseGain = ctx.createGain(); const noiseFilter = ctx.createBiquadFilter();
-            noiseFilter.type = 'highpass'; noiseFilter.frequency.value = 7000;
-            noiseGain.gain.setValueAtTime(0, now + 0.36);
-            noiseGain.gain.linearRampToValueAtTime(0.08, now + 0.4);
-            noiseGain.gain.exponentialRampToValueAtTime(0.001, now + 1.0);
-            noise.connect(noiseFilter); noiseFilter.connect(noiseGain); noiseGain.connect(ctx.destination);
-            noise.start(now + 0.36); noise.stop(now + 1.2);
-        } catch (e) { console.log('Audio not available:', e); }
     }
 
     // ── Confetti ──
@@ -1266,180 +1674,26 @@
     }
 
     // ══════════════════════════════════════════════════
-    //  QUARTER RESULTS
-    // ══════════════════════════════════════════════════
-    function renderQuarters() {
-        document.getElementById('quarterResults').innerHTML = [{k:'q1',l:'Q1'},{k:'q2',l:'Q2'},{k:'q3',l:'Q3'},{k:'q4',l:'Q4'}].map(q => {
-            const s = scores[q.k]; let st='—',bt='',wt='TBD',wc='none';
-            if (s && s.pats !== undefined) {
-                st = `PAT: ${s.pats}  SEA: ${s.hawks}`;
-                if (numbersAssigned) {
-                    const pd=+s.pats, hd=+s.hawks; bt = `(${pd}, ${hd})`;
-                    const d = gridData[`${rowNumbers.indexOf(hd)}_${colNumbers.indexOf(pd)}`];
-                    if (d) { wt = `🏆 ${esc(d.initials)} — ${esc(d.name.split(' ')[0])}`; wc = ''; }
-                    else wt = 'Empty box';
-                }
-            } else if (!numbersAssigned) wt = 'Numbers not set';
-            return `<div class="q-card"><div class="q-label">${q.l}</div><div class="q-score">${st}</div><div class="q-box">${bt}</div><div class="q-winner ${wc}">${wt}</div><div class="q-prize">$25</div></div>`;
-        }).join('');
-    }
-
-    // ══════════════════════════════════════════════════
-    //  PLAYERS
-    // ══════════════════════════════════════════════════
-    function renderPlayers() {
-        const entries = Object.entries(playersData);
-        document.getElementById('noPlayersMsg').classList.toggle('hidden', entries.length > 0);
-        document.getElementById('playerTableWrap').classList.toggle('hidden', entries.length === 0);
-        if (!entries.length) return;
-        document.getElementById('playerTableBody').innerHTML = entries
-            .map(([uid, d]) => ({ uid, name: d.name||'?', initials: d.initials, cnt: d.boxCount||0, win: calcWin(uid) }))
-            .sort((a,b) => b.cnt - a.cnt)
-            .map(p => {
-                const me = currentUser && p.uid === currentUser.uid;
-                return `<tr class="${me?'is-me':''}"><td>${esc(p.name.split(' ')[0])}${me?' (you)':''}</td><td><span class="initials-badge">${esc(p.initials)}</span></td><td>${p.cnt}</td><td>$${p.cnt}</td><td class="winnings ${p.win?'':'zero'}">$${p.win}</td></tr>`;
-            }).join('');
-
-        // Update admin manage players dropdown if admin
-        if (isAdmin) buildManagePlayerSelect();
-    }
-    function calcWin(uid) {
-        if (!numbersAssigned) return 0; let t = 0;
-        ['q1','q2','q3','q4'].forEach(q => {
-            const s = scores[q];
-            if (s?.pats !== undefined) {
-                const d = gridData[`${rowNumbers.indexOf(+s.hawks)}_${colNumbers.indexOf(+s.pats)}`];
-                if (d?.uid === uid) t += 25;
-            }
-        }); return t;
-    }
-
-    // ══════════════════════════════════════════════════
-    //  ADMIN: MANAGE PLAYERS (add boxes for any user)
-    // ══════════════════════════════════════════════════
-    let adminActingAsUid = null, adminActingAsData = null;
-
-    function buildManagePlayerSelect() {
-        const sel = document.getElementById('managePlayerSelect');
-        if (!sel) return;
-        const curVal = sel.value;
-        sel.innerHTML = '<option value="">— Select player —</option>';
-        Object.entries(playersData)
-            .sort((a, b) => (a[1].name || '').localeCompare(b[1].name || ''))
-            .forEach(([uid, d]) => {
-                const o = document.createElement('option');
-                o.value = uid;
-                o.textContent = `${d.name || '?'} (${d.initials}) — ${d.boxCount} boxes`;
-                sel.appendChild(o);
-            });
-        if (curVal && playersData[curVal]) sel.value = curVal;
-        buildManageAddCountSelect();
-        updateManagePlayerInfo();
-    }
-
-    function buildManageAddCountSelect() {
-        const gridUsed = Object.keys(gridData).length;
-        const avail = Math.min(10, 100 - gridUsed);
-        const sel = document.getElementById('manageAddCount');
-        const curVal = parseInt(sel.value) || 1;
-        sel.innerHTML = '';
-        for (let i = 1; i <= Math.max(avail, 1); i++) {
-            const o = document.createElement('option');
-            o.value = i; o.textContent = i;
-            sel.appendChild(o);
-        }
-        sel.value = Math.min(curVal, avail || 1);
-        if (avail <= 0) sel.disabled = true;
-        else sel.disabled = false;
-    }
-
-    function updateManagePlayerInfo() {
-        const uid = document.getElementById('managePlayerSelect').value;
-        const info = document.getElementById('managePlayerInfo');
-        const btn = document.getElementById('adminAddBoxesBtn');
-        if (!uid || !playersData[uid]) {
-            info.textContent = '';
-            btn.disabled = true;
-            return;
-        }
-        const p = playersData[uid];
-        const addCount = parseInt(document.getElementById('manageAddCount').value) || 1;
-        const gridUsed = Object.keys(gridData).length;
-        const avail = 100 - gridUsed;
-        if (avail <= 0) {
-            info.innerHTML = `<strong>${esc(p.name)}</strong> has ${p.boxCount} boxes. <span style="color:var(--danger);">Grid is full — no boxes available.</span>`;
-            btn.disabled = true;
-        } else {
-            info.innerHTML = `<strong>${esc(p.name)}</strong> has ${p.boxCount} boxes → will have <strong>${p.boxCount + addCount}</strong> after adding ${addCount}. (${avail} open on grid)`;
-            btn.disabled = false;
-        }
-    }
-
-    function adminAddBoxes() {
-        const uid = document.getElementById('managePlayerSelect').value;
-        const errEl = document.getElementById('managePlayerError');
-        errEl.style.display = 'none';
-
-        if (!uid || !playersData[uid]) {
-            errEl.textContent = 'Select a player first'; errEl.style.display = 'block'; return;
-        }
-        const p = playersData[uid];
-        const addCount = parseInt(document.getElementById('manageAddCount').value) || 1;
-        const gridUsed = Object.keys(gridData).length;
-        const avail = 100 - gridUsed;
-
-        if (addCount > avail) {
-            errEl.textContent = `Only ${avail} box${avail !== 1 ? 'es' : ''} available on the grid`; errEl.style.display = 'block'; return;
-        }
-
-        // Enter manual select mode acting as this player
-        isAddMoreMode = true;
-        addMoreOriginalCount = p.boxCount;
-        adminActingAsUid = uid;
-        adminActingAsData = p;
-        manualSelectMode = true;
-        manualInitials = p.initials;
-        manualBoxTarget = addCount;
-        manualPicks = [];
-
-        // Switch to grid tab and show banner
-        switchTab('grid');
-        updateSelectBanner();
-        document.getElementById('selectBanner').classList.remove('hidden');
-        renderGrid();
-        document.getElementById('selectBanner').scrollIntoView({ behavior: 'smooth', block: 'start' });
-        showToast(`Admin: pick ${addCount} box${addCount > 1 ? 'es' : ''} for ${p.name} (${p.initials})`);
-    }
-
-    // ══════════════════════════════════════════════════
-    //  ADMIN RESET
-    // ══════════════════════════════════════════════════
-    async function resetGrid() {
-        if (!await showConfirm('Delete ALL data? Squares, players, numbers, scores?')) return;
-        if (!await showConfirm('REALLY sure? Cannot be undone.')) return;
-        await db.ref(GAME_REF).remove();
-        showToast('Grid reset');
-    }
-
-    // ══════════════════════════════════════════════════
     //  TABS & UTILS
     // ══════════════════════════════════════════════════
     function switchTab(t) {
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
         document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-        document.querySelector(`[onclick="switchTab('${t}')"]`).classList.add('active');
-        document.getElementById(`tab-${t}`).classList.add('active');
+        const btn = document.querySelector(`[onclick="switchTab('${t}')"]`);
+        if (btn) btn.classList.add('active');
+        const tab = document.getElementById(`tab-${t}`);
+        if (tab) tab.classList.add('active');
     }
 
     function esc(t) { if (!t) return ''; const d = document.createElement('div'); d.textContent = t; return d.innerHTML; }
+
+    function closeOverlay(id) { document.getElementById(id).classList.add('hidden'); }
 
     function showValidationError(msg) {
         const err = document.getElementById('initialsError');
         const input = document.getElementById('initialsInput');
         err.textContent = msg; err.style.display = 'block';
-        input.classList.remove('shake');
-        void input.offsetWidth; // force reflow
-        input.classList.add('shake');
+        input.classList.remove('shake'); void input.offsetWidth; input.classList.add('shake');
         input.focus();
         showToast('⚠️ ' + msg);
     }
@@ -1468,129 +1722,6 @@
             o.querySelector('#_cy').onclick = () => { o.remove(); res(true); };
             o.onclick = () => { o.remove(); res(false); };
         });
-    }
-
-    // ══════════════════════════════════════════════════
-    //  TEST MODE
-    // ══════════════════════════════════════════════════
-    let testMode = false;
-    let testUserIds = [];
-
-    function toggleTestMode() {
-        testMode = document.getElementById('testModeToggle').checked;
-        document.getElementById('testModeControls').classList.toggle('hidden', !testMode);
-        if (testMode) {
-            document.getElementById('testModeStatus').textContent = '🟢 Active';
-            buildTestBoxSelect(); renderTestUsersList();
-        } else {
-            if (testUserIds.length > 0) removeAllTestUsers();
-            document.getElementById('testModeStatus').textContent = '';
-        }
-    }
-
-    function buildTestBoxSelect() {
-        const claimed = Object.keys(gridData).length;
-        const avail = Math.min(10, 100 - claimed);
-        const sel = document.getElementById('testUserBoxes');
-        sel.innerHTML = '';
-        for (let i = 1; i <= Math.max(avail, 1); i++) {
-            const o = document.createElement('option'); o.value = i; o.textContent = i; sel.appendChild(o);
-        }
-        sel.value = Math.min(3, avail);
-    }
-
-    async function addTestUser() {
-        const name = document.getElementById('testUserName').value.trim();
-        const initials = document.getElementById('testUserInitials').value.trim().toUpperCase();
-        const boxCount = parseInt(document.getElementById('testUserBoxes').value);
-        const errEl = document.getElementById('testUserError');
-        errEl.style.display = 'none';
-        if (!name) { errEl.textContent = 'Enter a name'; errEl.style.display = 'block'; return; }
-        if (initials.length < 2 || initials.length > 3 || !/^[A-Z]+$/.test(initials)) { errEl.textContent = 'Initials: 2-3 letters'; errEl.style.display = 'block'; return; }
-        for (const uid in playersData) { if (playersData[uid].initials === initials) { errEl.textContent = `"${initials}" is already taken`; errEl.style.display = 'block'; return; } }
-        const avail = [];
-        for (let r = 0; r < 10; r++) for (let c = 0; c < 10; c++) { const k = `${r}_${c}`; if (!gridData[k]) avail.push(k); }
-        if (avail.length < boxCount) { errEl.textContent = 'Not enough boxes available'; errEl.style.display = 'block'; return; }
-        const fakeUid = 'test_' + Math.random().toString(36).substr(2, 12);
-        const picks = [...avail].sort(() => Math.random() - 0.5).slice(0, boxCount);
-        const up = {};
-        up[`${GAME_REF}/players/${fakeUid}`] = { name, initials, boxCount, email: `${name.toLowerCase()}@test.com`, isTest: true };
-        picks.forEach(k => { up[`${GAME_REF}/grid/${k}`] = { uid: fakeUid, initials, name }; });
-        await db.ref().update(up);
-        testUserIds.push(fakeUid);
-        showToast(`Test user "${name}" (${initials}) added with ${boxCount} boxes`);
-        document.getElementById('testUserName').value = '';
-        document.getElementById('testUserInitials').value = '';
-        buildTestBoxSelect(); renderTestUsersList();
-    }
-
-    async function fillGridWithTestUsers() {
-        const avail = [];
-        for (let r = 0; r < 10; r++) for (let c = 0; c < 10; c++) { const k = `${r}_${c}`; if (!gridData[k]) avail.push(k); }
-        if (avail.length === 0) { showToast('Grid is already full!'); return; }
-        const names = ['Alice','Bob','Carol','Dan','Eve','Frank','Grace','Hank','Iris','Jake','Kate','Leo','Mia','Nate','Olive','Pete','Quinn','Rosa','Sam','Tina'];
-        const shuffledAvail = [...avail].sort(() => Math.random() - 0.5);
-        const up = {}; let nameIdx = 0; let remaining = shuffledAvail.length;
-        while (remaining > 0) {
-            const firstName = names[nameIdx % names.length];
-            const suffix = nameIdx >= names.length ? (Math.floor(nameIdx / names.length) + 1) : '';
-            const fullName = firstName + suffix;
-            let init = firstName.substring(0, 2).toUpperCase();
-            if (suffix) init = firstName[0].toUpperCase() + suffix;
-            let attempt = 0;
-            while (isInitialsTaken(init, up) && attempt < 20) { init = String.fromCharCode(65 + Math.floor(Math.random()*26)) + String.fromCharCode(65 + Math.floor(Math.random()*26)); attempt++; }
-            const boxCount = Math.min(Math.floor(Math.random() * 5) + 1, remaining);
-            const fakeUid = 'test_' + Math.random().toString(36).substr(2, 12);
-            const picks = shuffledAvail.splice(0, boxCount);
-            up[`${GAME_REF}/players/${fakeUid}`] = { name: fullName, initials: init, boxCount, email: `${fullName.toLowerCase()}@test.com`, isTest: true };
-            picks.forEach(k => { up[`${GAME_REF}/grid/${k}`] = { uid: fakeUid, initials: init, name: fullName }; });
-            testUserIds.push(fakeUid); remaining = shuffledAvail.length; nameIdx++;
-        }
-        await db.ref().update(up);
-        showToast(`Filled grid with test users!`);
-        buildTestBoxSelect(); renderTestUsersList();
-    }
-
-    function isInitialsTaken(init, pendingUpdates) {
-        for (const uid in playersData) { if (playersData[uid].initials === init) return true; }
-        for (const key in pendingUpdates) { if (key.includes('/players/') && pendingUpdates[key].initials === init) return true; }
-        return false;
-    }
-
-    async function removeAllTestUsers() {
-        if (testUserIds.length === 0) { showToast('No test users to remove'); return; }
-        const up = {};
-        for (const uid of testUserIds) up[`${GAME_REF}/players/${uid}`] = null;
-        for (const key in gridData) { if (gridData[key]?.uid?.startsWith('test_')) up[`${GAME_REF}/grid/${key}`] = null; }
-        for (const uid in playersData) { if (uid.startsWith('test_') || playersData[uid].isTest) up[`${GAME_REF}/players/${uid}`] = null; }
-        await db.ref().update(up);
-        const count = testUserIds.length; testUserIds = [];
-        showToast(`Removed ${count} test user${count > 1 ? 's' : ''}`);
-        renderTestUsersList();
-    }
-
-    async function removeTestUser(uid) {
-        const up = {}; up[`${GAME_REF}/players/${uid}`] = null;
-        for (const key in gridData) { if (gridData[key]?.uid === uid) up[`${GAME_REF}/grid/${key}`] = null; }
-        await db.ref().update(up);
-        testUserIds = testUserIds.filter(id => id !== uid);
-        showToast('Test user removed');
-        buildTestBoxSelect(); renderTestUsersList();
-    }
-
-    function renderTestUsersList() {
-        const el = document.getElementById('testUsersList');
-        const testPlayers = Object.entries(playersData).filter(([uid, d]) => uid.startsWith('test_') || d.isTest);
-        if (testPlayers.length === 0) { el.innerHTML = '<span style="color:var(--text-muted);font-size:0.75rem;">No test users yet</span>'; return; }
-        el.innerHTML = '<div style="font-size:0.72rem;color:var(--text-muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:1px;">Test Users (' + testPlayers.length + ')</div>' +
-            testPlayers.map(([uid, d]) =>
-                `<div style="display:flex;align-items:center;gap:8px;padding:4px 0;border-bottom:1px solid rgba(255,255,255,0.04);">
-                    <span class="initials-badge" style="background:var(--bg-tertiary);border-radius:4px;padding:2px 8px;font-weight:700;font-size:0.72rem;letter-spacing:1px;">${esc(d.initials)}</span>
-                    <span style="flex:1;">${esc(d.name)}</span>
-                    <span style="color:var(--text-muted);font-size:0.72rem;">${d.boxCount} boxes</span>
-                    <button onclick="removeTestUser('${uid}')" style="background:none;border:none;color:var(--danger);cursor:pointer;font-size:0.82rem;padding:2px 6px;">✕</button>
-                </div>`
-            ).join('');
     }
 
     </script>
