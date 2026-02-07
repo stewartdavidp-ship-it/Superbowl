@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Super Bowl LX Squares</title>
-    <meta name="version" content="6.0.0">
+    <meta name="version" content="6.1.0">
     <meta name="gs-app-id" content="sb-squares">
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -564,6 +564,10 @@
                 <div style="font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:2px;color:var(--text-secondary);margin-bottom:10px;display:flex;align-items:center;gap:8px;">🏈 Your Grids</div>
                 <div id="myGridsList"></div>
             </div>
+            <!-- Super Admin (site owner only) -->
+            <div id="superAdminBtn" class="hidden" style="margin-top:24px;text-align:center;">
+                <button onclick="openSuperAdmin()" style="background:none;border:1px solid rgba(239,68,68,0.25);color:var(--danger);padding:8px 20px;border-radius:8px;font-family:'Outfit',sans-serif;font-size:0.78rem;font-weight:600;cursor:pointer;letter-spacing:1px;opacity:0.7;transition:opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.7'">🔧 Super Admin</button>
+            </div>
         </div>
 
         <div id="mainApp" class="hidden">
@@ -818,6 +822,42 @@
         </div>
     </div>
 
+    <!-- ═══ SUPER ADMIN PANEL ═══ -->
+    <div id="superAdminOverlay" class="overlay hidden" onclick="closeOverlay('superAdminOverlay')">
+        <div class="overlay-card" onclick="event.stopPropagation()" style="max-width:520px;">
+            <h2 style="color:var(--danger);">🔧 Super Admin</h2>
+            <div class="sub">Site-wide grid and player management.</div>
+
+            <!-- Grid selector -->
+            <div class="form-group">
+                <label>Select Grid</label>
+                <select id="saGridSelect" onchange="saLoadGrid()" style="width:100%;padding:10px 12px;background:var(--bg-tertiary);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:var(--text-primary);font-family:'Outfit',sans-serif;font-size:0.9rem;">
+                    <option value="">— Loading grids... —</option>
+                </select>
+            </div>
+
+            <!-- Grid info -->
+            <div id="saGridInfo" class="hidden" style="margin-bottom:16px;">
+                <div style="background:var(--bg-tertiary);border-radius:10px;padding:14px;margin-bottom:12px;">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+                        <div>
+                            <div style="font-weight:600;font-size:0.95rem;" id="saGridName"></div>
+                            <div style="font-size:0.72rem;color:var(--text-muted);margin-top:2px;" id="saGridMeta"></div>
+                        </div>
+                        <span style="font-family:'Bebas Neue',sans-serif;letter-spacing:3px;color:var(--gold);font-size:1rem;background:rgba(255,182,18,0.1);padding:2px 10px;border-radius:6px;" id="saGridCode"></span>
+                    </div>
+                    <button onclick="saDeleteGrid()" style="background:var(--danger);color:white;border:none;border-radius:6px;padding:8px 16px;font-family:'Outfit',sans-serif;font-weight:600;font-size:0.78rem;cursor:pointer;width:100%;">🗑️ Delete This Grid</button>
+                </div>
+
+                <!-- Players list -->
+                <div style="font-family:'Bebas Neue',sans-serif;font-size:0.95rem;letter-spacing:2px;color:var(--text-secondary);margin-bottom:8px;">Players</div>
+                <div id="saPlayersList" style="max-height:300px;overflow-y:auto;"></div>
+            </div>
+
+            <button class="btn-outline" onclick="closeOverlay('superAdminOverlay')">Close</button>
+        </div>
+    </div>
+
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
@@ -883,6 +923,7 @@
     //  Only runs once — sets sb-squares-lx/migrated = true when done.
     // ══════════════════════════════════════════════════
     const LEGACY_ADMIN_EMAIL = 'stewartdavidp@gmail.com';
+    const SUPER_ADMIN_EMAIL = 'stewartdavidp@gmail.com';
     const LEGACY_GAME_NAME = 'SB LX Original Grid';
 
     async function migrateLegacyData() {
@@ -1035,6 +1076,9 @@
         document.getElementById('lobbyScreen').classList.remove('hidden');
         document.getElementById('mainApp').classList.add('hidden');
         document.getElementById('authScreen').classList.add('hidden');
+        // Show super admin button only for site owner
+        const saBtn = document.getElementById('superAdminBtn');
+        if (saBtn) saBtn.classList.toggle('hidden', !currentUser || currentUser.email !== SUPER_ADMIN_EMAIL);
         loadMyGames();
     }
     function goToLobby() { showLobby(); }
@@ -1671,6 +1715,157 @@
         canvas.classList.add('hidden');
         canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
         confettiPieces = [];
+    }
+
+    // ══════════════════════════════════════════════════
+    //  TABS & UTILS
+    // ══════════════════════════════════════════════════
+    // ══════════════════════════════════════════════════
+    //  SUPER ADMIN
+    // ══════════════════════════════════════════════════
+    let saAllGames = {}; // { gameId: { config, players, gridCount } }
+    let saSelectedGameId = null;
+
+    async function openSuperAdmin() {
+        if (!currentUser || currentUser.email !== SUPER_ADMIN_EMAIL) return;
+        document.getElementById('superAdminOverlay').classList.remove('hidden');
+        document.getElementById('saGridInfo').classList.add('hidden');
+        document.getElementById('saGridSelect').innerHTML = '<option value="">— Loading... —</option>';
+        saSelectedGameId = null;
+
+        // Load ALL games
+        const gamesSnap = await db.ref(`${GAME_REF}/games`).once('value');
+        const allGames = gamesSnap.val() || {};
+        saAllGames = {};
+
+        const sel = document.getElementById('saGridSelect');
+        sel.innerHTML = '<option value="">— Select a grid —</option>';
+
+        for (const [gid, data] of Object.entries(allGames)) {
+            const conf = data.config;
+            if (!conf) continue;
+            const playerCount = data.players ? Object.keys(data.players).length : 0;
+            const gridCount = data.grid ? Object.keys(data.grid).length : 0;
+            saAllGames[gid] = { config: conf, players: data.players || {}, grid: data.grid || {}, gridCount, playerCount };
+
+            const opt = document.createElement('option');
+            opt.value = gid;
+            opt.textContent = `${conf.gameName || 'Unnamed'} [${conf.code}] — ${playerCount} players, ${gridCount}/100`;
+            sel.appendChild(opt);
+        }
+
+        if (Object.keys(saAllGames).length === 0) {
+            sel.innerHTML = '<option value="">— No grids exist —</option>';
+        }
+    }
+
+    function saLoadGrid() {
+        const gid = document.getElementById('saGridSelect').value;
+        const infoEl = document.getElementById('saGridInfo');
+        if (!gid || !saAllGames[gid]) { infoEl.classList.add('hidden'); saSelectedGameId = null; return; }
+
+        saSelectedGameId = gid;
+        const g = saAllGames[gid];
+        infoEl.classList.remove('hidden');
+
+        document.getElementById('saGridName').textContent = g.config.gameName || 'Unnamed';
+        const cost = g.config.costPerSquare || 0;
+        document.getElementById('saGridMeta').textContent = `Created by ${g.config.createdByName || '?'} • ${g.playerCount} players • ${g.gridCount}/100 filled • ${cost > 0 ? '$' + cost + '/sq' : 'Free'}`;
+        document.getElementById('saGridCode').textContent = g.config.code;
+
+        // Render players
+        saRenderPlayers(gid);
+    }
+
+    function saRenderPlayers(gid) {
+        const g = saAllGames[gid];
+        const listEl = document.getElementById('saPlayersList');
+        const entries = Object.entries(g.players);
+
+        if (entries.length === 0) {
+            listEl.innerHTML = '<div style="padding:12px;color:var(--text-muted);font-size:0.82rem;text-align:center;">No players</div>';
+            return;
+        }
+
+        listEl.innerHTML = entries
+            .sort((a, b) => (a[1].name || '').localeCompare(b[1].name || ''))
+            .map(([uid, p]) => {
+                const isCreator = uid === g.config.createdBy;
+                return `<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--bg-tertiary);border-radius:8px;margin-bottom:4px;">
+                    <span style="background:rgba(102,126,234,0.15);border-radius:4px;padding:2px 8px;font-weight:700;font-size:0.78rem;letter-spacing:1px;color:var(--accent);min-width:36px;text-align:center;">${esc(p.initials)}</span>
+                    <div style="flex:1;min-width:0;">
+                        <div style="font-size:0.85rem;font-weight:500;">${esc(p.name || '?')}${isCreator ? ' <span style="font-size:0.65rem;color:var(--gold);background:rgba(255,182,18,0.15);padding:1px 5px;border-radius:3px;">CREATOR</span>' : ''}</div>
+                        <div style="font-size:0.68rem;color:var(--text-muted);">${esc(p.email || uid)} • ${p.boxCount || 0} boxes</div>
+                    </div>
+                    <button onclick="saKickPlayer('${gid}','${uid}')" style="background:none;border:1px solid rgba(239,68,68,0.3);color:var(--danger);padding:5px 10px;border-radius:6px;font-size:0.7rem;font-weight:600;cursor:pointer;font-family:'Outfit',sans-serif;white-space:nowrap;" title="Remove player and their boxes">Kick</button>
+                </div>`;
+            }).join('');
+    }
+
+    async function saKickPlayer(gid, uid) {
+        const g = saAllGames[gid];
+        const player = g.players[uid];
+        if (!player) return;
+        if (!await showConfirm(`Remove ${player.name || uid} (${player.initials}) and all their ${player.boxCount || 0} boxes from "${g.config.gameName}"?`)) return;
+
+        const update = {};
+        // Remove player
+        update[`${GAME_REF}/games/${gid}/players/${uid}`] = null;
+        // Remove their grid cells
+        for (const [key, cell] of Object.entries(g.grid)) {
+            if (cell.uid === uid) update[`${GAME_REF}/games/${gid}/grid/${key}`] = null;
+        }
+        // Remove from their game list
+        update[`${GAME_REF}/users/${uid}/games/${gid}`] = null;
+
+        await db.ref().update(update);
+
+        // Update local cache
+        delete g.players[uid];
+        const removedCells = Object.entries(g.grid).filter(([k, c]) => c.uid === uid);
+        removedCells.forEach(([k]) => delete g.grid[k]);
+        g.playerCount = Object.keys(g.players).length;
+        g.gridCount = Object.keys(g.grid).length;
+
+        showToast(`Kicked ${player.name} — ${removedCells.length} boxes freed`);
+        saRenderPlayers(gid);
+        // Update the select option text
+        const sel = document.getElementById('saGridSelect');
+        const opt = sel.querySelector(`option[value="${gid}"]`);
+        if (opt) opt.textContent = `${g.config.gameName || 'Unnamed'} [${g.config.code}] — ${g.playerCount} players, ${g.gridCount}/100`;
+        // Update meta
+        document.getElementById('saGridMeta').textContent = `Created by ${g.config.createdByName || '?'} • ${g.playerCount} players • ${g.gridCount}/100 filled • ${(g.config.costPerSquare || 0) > 0 ? '$' + g.config.costPerSquare + '/sq' : 'Free'}`;
+    }
+
+    async function saDeleteGrid() {
+        const gid = saSelectedGameId;
+        if (!gid || !saAllGames[gid]) return;
+        const g = saAllGames[gid];
+        if (!await showConfirm(`DELETE "${g.config.gameName}" [${g.config.code}]?\n\nThis removes all players, boxes, numbers, scores. Cannot be undone.`)) return;
+        if (!await showConfirm(`REALLY delete "${g.config.gameName}"? Last chance.`)) return;
+
+        const update = {};
+        // Remove game data
+        update[`${GAME_REF}/games/${gid}`] = null;
+        // Remove code lookup
+        update[`${GAME_REF}/codes/${g.config.code}`] = null;
+        // Remove from all players' game lists
+        for (const uid of Object.keys(g.players)) {
+            update[`${GAME_REF}/users/${uid}/games/${gid}`] = null;
+        }
+
+        await db.ref().update(update);
+
+        showToast(`Deleted "${g.config.gameName}"`);
+        delete saAllGames[gid];
+        saSelectedGameId = null;
+        document.getElementById('saGridInfo').classList.add('hidden');
+
+        // Rebuild select
+        const sel = document.getElementById('saGridSelect');
+        const opt = sel.querySelector(`option[value="${gid}"]`);
+        if (opt) opt.remove();
+        sel.value = '';
     }
 
     // ══════════════════════════════════════════════════
