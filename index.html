@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Super Bowl LX Squares</title>
-    <meta name="version" content="6.1.0">
+    <meta name="version" content="6.2.0">
     <meta name="gs-app-id" content="sb-squares">
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -594,6 +594,13 @@
             </div>
 
             <div id="tab-grid" class="tab-content active">
+                <!-- Prompt to claim boxes if not yet a player -->
+                <div id="claimPrompt" class="hidden" style="margin-bottom:14px;padding:16px;background:linear-gradient(135deg,rgba(255,182,18,0.12),rgba(255,182,18,0.04));border:1px solid rgba(255,182,18,0.2);border-radius:12px;text-align:center;">
+                    <div style="font-size:1.4rem;margin-bottom:6px;">🏈</div>
+                    <div style="font-weight:600;font-size:0.95rem;margin-bottom:4px;">Ready to play?</div>
+                    <div style="font-size:0.78rem;color:var(--text-secondary);margin-bottom:12px;" id="claimPromptSub">Claim your squares to join this grid.</div>
+                    <button class="btn-gold" style="max-width:240px;" onclick="showClaimOverlay()">Claim Your Boxes</button>
+                </div>
                 <div id="selectBanner" class="select-banner hidden">
                     <div class="select-info">
                         Tap <strong id="selectRemaining">0</strong> more box<span id="selectPlural">es</span> to place your <strong id="selectInitialsLabel"></strong>
@@ -720,7 +727,7 @@
             <div class="winner-name" id="winName"></div>
             <div class="winner-initials" id="winInitials"></div>
             <div class="winner-score" id="winScore"></div>
-            <div class="winner-prize">$25</div>
+            <div class="winner-prize" id="winPrize">$25</div>
             <button class="dismiss-btn" onclick="dismissCelebration()">LET'S GO!</button>
         </div>
     </div>
@@ -728,7 +735,7 @@
     <div id="setupOverlay" class="overlay hidden">
         <div class="overlay-card">
             <h2>Claim Your Squares</h2>
-            <div class="sub">Pick your initials and how many boxes you want. $1 per box.</div>
+            <div class="sub" id="setupSub">Pick your initials and how many boxes you want.</div>
             <div class="form-group">
                 <label>Your Initials (2-3 letters)</label>
                 <input type="text" id="initialsInput" maxlength="3" placeholder="e.g. DS" autocomplete="off" style="text-transform:uppercase; letter-spacing:2px; font-weight:700;">
@@ -1356,7 +1363,31 @@
     // ══════════════════════════════════════════════════
     //  SETUP / CLAIM
     // ══════════════════════════════════════════════════
-    function checkSetup() { if(!currentUser||!currentGameId||manualSelectMode) return; if(!playersData[currentUser.uid]){buildBoxSelect();document.getElementById('setupOverlay').classList.remove('hidden');updateAddMoreBar(false);}else{document.getElementById('setupOverlay').classList.add('hidden');updateAddMoreBar(true);} }
+    function checkSetup() {
+        if(!currentUser||!currentGameId||manualSelectMode||!currentGameConfig) return;
+        const isPlayer = !!playersData[currentUser.uid];
+        const prompt = document.getElementById('claimPrompt');
+        if (!isPlayer) {
+            // Show inline prompt on grid tab
+            if (prompt) {
+                prompt.classList.remove('hidden');
+                const cost = currentGameConfig.costPerSquare || 0;
+                const sub = document.getElementById('claimPromptSub');
+                if (sub) sub.textContent = cost > 0 ? `$${cost} per square \u2022 Claim your boxes to join this grid.` : 'Claim your boxes to join this grid.';
+            }
+            updateAddMoreBar(false);
+        } else {
+            if (prompt) prompt.classList.add('hidden');
+            document.getElementById('setupOverlay').classList.add('hidden');
+            updateAddMoreBar(true);
+        }
+    }
+
+    function showClaimOverlay() {
+        if (!currentGameConfig) return;
+        buildBoxSelect();
+        document.getElementById('setupOverlay').classList.remove('hidden');
+    }
 
     function buildBoxSelect() {
         const avail=Math.min(10,100-Object.keys(gridData).length); const sel=document.getElementById('boxCountSelect'); sel.innerHTML='';
@@ -1364,6 +1395,8 @@
         for(let i=1;i<=Math.max(avail,1);i++){const o=document.createElement('option');o.value=i;o.textContent=cost>0?`${i} box${i>1?'es':''} — $${i*cost}`:`${i} box${i>1?'es':''}`;sel.appendChild(o);}
         sel.value=Math.min(5,avail); updateCost(); sel.onchange=updateCost;
         document.getElementById('costHelper').innerHTML=cost>0?`$${cost} per box \u2022 Total: <strong id="costPreview">$${Math.min(5,avail)*cost}</strong>`:'Free pool \u2022 <strong id="costPreview">No cost</strong>';
+        const sub=document.getElementById('setupSub');
+        if(sub) sub.textContent=cost>0?`Pick your initials and how many boxes you want. $${cost} per box.`:'Pick your initials and how many boxes you want.';
     }
     function updateCost() { const n=parseInt(document.getElementById('boxCountSelect').value)||0; const c=currentGameConfig?.costPerSquare||0; const el=document.getElementById('costPreview'); if(el) el.textContent=c>0?`$${n*c}`:'Free'; }
 
