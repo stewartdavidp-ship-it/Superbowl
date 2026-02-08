@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Super Bowl LX Squares</title>
-    <meta name="version" content="6.3.3">
+    <meta name="version" content="6.3.5">
     <meta name="gs-app-id" content="sb-squares">
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -341,7 +341,9 @@
         .score-input-group .score-pair { display: flex; gap: 4px; }
         .score-input-group input, .score-input-group select { width: 100%; padding: 8px 6px; background: var(--bg-tertiary); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; color: var(--text-primary); font-family: 'Outfit', sans-serif; font-size: 0.85rem; text-align: center; }
         .score-input-group input:focus, .score-input-group select:focus { outline: none; border-color: var(--gold); }
-        .score-input-group .team-label { font-size: 0.6rem; color: var(--text-muted); text-align: center; margin-top: 2px; }
+        .score-input-group .team-label { font-size: 0.65rem; text-align: center; margin-top: 3px; font-weight: 700; letter-spacing: 1px; }
+        .score-input-group .team-label.pats-label { color: #4a90d9; }
+        .score-input-group .team-label.hawks-label { color: #69be28; }
         .numbers-preview { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 6px; }
         .num-chip { background: var(--bg-tertiary); padding: 4px 10px; border-radius: 4px; font-size: 0.78rem; color: var(--text-secondary); font-weight: 600; }
         .admin-btn-row { display: flex; gap: 8px; flex-wrap: wrap; }
@@ -705,12 +707,12 @@
                         <div style="display:flex;gap:8px;margin-bottom:10px;align-items:end;">
                             <div style="flex:1;text-align:center;">
                                 <label style="display:block;font-size:0.7rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">PAT Score</label>
-                                <input type="number" id="evPats" min="0" max="99" value="" placeholder="0" style="width:100%;padding:10px;background:var(--bg-tertiary);border:1px solid rgba(255,255,255,0.1);border-radius:6px;color:var(--text-primary);font-size:1.2rem;text-align:center;font-family:'Bebas Neue',sans-serif;letter-spacing:2px;">
+                                <input type="number" id="evPats" min="0" max="99" value="0" style="width:100%;padding:10px;background:var(--bg-tertiary);border:1px solid rgba(255,255,255,0.1);border-radius:6px;color:var(--text-primary);font-size:1.2rem;text-align:center;font-family:'Bebas Neue',sans-serif;letter-spacing:2px;">
                             </div>
                             <div style="flex:0;padding-bottom:8px;font-size:1.2rem;color:var(--text-muted);">—</div>
                             <div style="flex:1;text-align:center;">
                                 <label style="display:block;font-size:0.7rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">SEA Score</label>
-                                <input type="number" id="evHawks" min="0" max="99" value="" placeholder="0" style="width:100%;padding:10px;background:var(--bg-tertiary);border:1px solid rgba(255,255,255,0.1);border-radius:6px;color:var(--text-primary);font-size:1.2rem;text-align:center;font-family:'Bebas Neue',sans-serif;letter-spacing:2px;">
+                                <input type="number" id="evHawks" min="0" max="99" value="0" style="width:100%;padding:10px;background:var(--bg-tertiary);border:1px solid rgba(255,255,255,0.1);border-radius:6px;color:var(--text-primary);font-size:1.2rem;text-align:center;font-family:'Bebas Neue',sans-serif;letter-spacing:2px;">
                             </div>
                         </div>
                         <div style="display:flex;gap:8px;margin-bottom:8px;">
@@ -1669,11 +1671,68 @@
     // ══════════════════════════════════════════════════
     //  SCORES
     // ══════════════════════════════════════════════════
-    function buildScoreInputs(){const c=document.getElementById('scoreInputs');if(!c)return;const opts='<option value="">-</option>'+[0,1,2,3,4,5,6,7,8,9].map(n=>`<option value="${n}">${n}</option>`).join('');c.innerHTML=['Q1','Q2','Q3','Q4'].map((q,i)=>`<div class="score-input-group"><label>${q}</label><div class="score-pair"><div style="flex:1"><select id="sp${i}">${opts}</select><div class="team-label">PAT</div></div><div style="flex:1"><select id="sh${i}">${opts}</select><div class="team-label">SEA</div></div></div></div>`).join('');}
+    function buildScoreInputs(){const c=document.getElementById('scoreInputs');if(!c)return;const opts='<option value="">-</option>'+[0,1,2,3,4,5,6,7,8,9].map(n=>`<option value="${n}">${n}</option>`).join('');c.innerHTML=['Q1','Q2','Q3','Q4'].map((q,i)=>`<div class="score-input-group"><label>${q}</label><div class="score-pair"><div style="flex:1"><select id="sp${i}">${opts}</select><div class="team-label pats-label">PATRIOTS</div></div><div style="flex:1"><select id="sh${i}">${opts}</select><div class="team-label hawks-label">SEAHAWKS</div></div></div></div>`).join('');}
     function populateScoreInputs(){['q1','q2','q3','q4'].forEach((q,i)=>{const s=scores[q],p=document.getElementById(`sp${i}`),h=document.getElementById(`sh${i}`);if(p&&h){p.value=s?.pats!==undefined?s.pats:'';h.value=s?.hawks!==undefined?s.hawks:'';}});}
-    async function saveScores(){const ns={};['q1','q2','q3','q4'].forEach((q,i)=>{const p=document.getElementById(`sp${i}`).value,h=document.getElementById(`sh${i}`).value;ns[q]=(p!==''&&h!=='')?{pats:+p,hawks:+h}:null;});
-    const nw=[];if(numbersAssigned){['q1','q2','q3','q4'].forEach((q,i)=>{const os=scores[q],ns2=ns[q];const had=os&&os.pats!==undefined;const has=ns2&&ns2.pats!==undefined;if(has&&!had){const ci=colNumbers.indexOf(ns2.pats),ri=rowNumbers.indexOf(ns2.hawks);if(ci!==-1&&ri!==-1){const cd=gridData[`${ri}_${ci}`];if(cd)nw.push({quarter:['Q1','Q2','Q3','Q4'][i],name:cd.name,initials:cd.initials,pats:ns2.pats,hawks:ns2.hawks});}}});}
-    await db.ref(gRef('scores')).set(ns);if(nw.length>0){celebrationQueue=[...nw];showNextCelebration();}else showToast('Scores saved!');}
+    async function saveScores() {
+        const ns = {};
+        ['q1','q2','q3','q4'].forEach((q,i) => {
+            const p = document.getElementById(`sp${i}`).value;
+            const h = document.getElementById(`sh${i}`).value;
+            ns[q] = (p !== '' && h !== '') ? { pats: +p, hawks: +h } : null;
+        });
+
+        // Find which quarters are new (being set for the first time)
+        const newQuarters = [];
+        ['q1','q2','q3','q4'].forEach((q,i) => {
+            const os = scores[q];
+            const ns2 = ns[q];
+            const had = os && os.pats !== undefined;
+            const has = ns2 && ns2.pats !== undefined;
+            if (has && !had) newQuarters.push({ q, label: ['Q1','Q2','Q3','Q4'][i], pats: ns2.pats, hawks: ns2.hawks });
+        });
+
+        // Confirmation dialog
+        if (newQuarters.length > 0) {
+            const lines = newQuarters.map(nq => `${nq.label}: Patriots ${nq.pats}, Seahawks ${nq.hawks}`).join('\n');
+            if (!await showConfirm(`Set scores?\n\n${lines}`)) return;
+        }
+
+        // Determine winners for celebration
+        const nw = [];
+        if (numbersAssigned) {
+            newQuarters.forEach(nq => {
+                const ci = colNumbers.indexOf(nq.pats), ri = rowNumbers.indexOf(nq.hawks);
+                if (ci !== -1 && ri !== -1) {
+                    const cd = gridData[`${ri}_${ci}`];
+                    if (cd) nw.push({ quarter: nq.label, name: cd.name, initials: cd.initials, pats: nq.pats, hawks: nq.hawks });
+                }
+            });
+        }
+
+        await db.ref(gRef('scores')).set(ns);
+
+        if (nw.length > 0) {
+            celebrationQueue = [...nw];
+            showNextCelebration();
+        } else {
+            showToast('Scores saved!');
+        }
+
+        // Check if all 4 quarters are now scored — game over
+        const allScored = ['q1','q2','q3','q4'].every(q => ns[q] && ns[q].pats !== undefined);
+        if (allScored && newQuarters.length > 0) {
+            const waitForCelebrations = () => {
+                if (celebrationQueue.length > 0 || !document.getElementById('winnerOverlay').classList.contains('hidden')) {
+                    setTimeout(waitForCelebrations, 500);
+                    return;
+                }
+                showConfirm('🏆 All quarters scored — game over!\n\nView final payouts on the Players tab?').then(ok => {
+                    if (ok) switchTab('players');
+                });
+            };
+            setTimeout(waitForCelebrations, nw.length > 0 ? 500 : 100);
+        }
+    }
 
     function renderQuarters() {
         const el = document.getElementById('quarterResults');
@@ -1740,9 +1799,7 @@
         btn.disabled = true; btn.innerHTML = '<span class="spinner"></span>';
         try {
             await db.ref(gRef('scoreEvents')).set(newEvents);
-            document.getElementById('evPats').value = '';
-            document.getElementById('evHawks').value = '';
-            document.getElementById('evDigitPreview').textContent = 'Grid: (?, ?)';
+            // Don't clear inputs — keep last score so admin only changes what changed
             // Trigger celebration for admin
             if (winnerUid) {
                 celebrationQueue = [{ quarter: `Score #${seq}`, name: winnerName, initials: winnerInitials, pats, hawks }];
@@ -1790,6 +1847,24 @@
         if (inputArea) inputArea.classList.toggle('hidden', gameEnded);
         if (gameOverArea) gameOverArea.classList.toggle('hidden', !gameEnded);
         if (undoBtn) { undoBtn.disabled = scoreEvents.length === 0 || gameEnded; }
+        
+        // Restore inputs from last score event so admin only changes what changed
+        if (isGameAdmin && scoreEvents.length > 0) {
+            const last = scoreEvents[scoreEvents.length - 1];
+            const pEl = document.getElementById('evPats');
+            const hEl = document.getElementById('evHawks');
+            // Only restore if inputs still show the previous score (don't overwrite mid-edit)
+            if (pEl && hEl) {
+                const pCur = Number(pEl.value), hCur = Number(hEl.value);
+                const prevEvent = scoreEvents.length >= 2 ? scoreEvents[scoreEvents.length - 2] : { patsFull: 0, hawksFull: 0 };
+                if (pCur === prevEvent.patsFull && hCur === prevEvent.hawksFull) {
+                    pEl.value = last.patsFull;
+                    hEl.value = last.hawksFull;
+                    const dp = document.getElementById('evDigitPreview');
+                    if (dp) dp.textContent = `Grid: (${last.patsFull % 10}, ${last.hawksFull % 10})`;
+                }
+            }
+        }
         if (endBtn) {
             if (gameEnded) {
                 endBtn.textContent = '↩ Reopen Game';
