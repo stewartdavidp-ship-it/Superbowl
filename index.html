@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Super Bowl LX Squares</title>
-    <meta name="version" content="6.3.0">
+    <meta name="version" content="6.3.1">
     <meta name="gs-app-id" content="sb-squares">
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -450,6 +450,9 @@
         .grid-card .gc-meta { font-size: 0.72rem; color: var(--text-muted); margin-top: 2px; }
         .grid-card .gc-code { font-family: 'Bebas Neue', sans-serif; font-size: 1rem; letter-spacing: 3px; color: var(--gold); background: rgba(255,182,18,0.1); padding: 2px 10px; border-radius: 6px; }
         .grid-card .gc-admin-badge { font-size: 0.65rem; background: rgba(255,182,18,0.15); color: var(--gold); padding: 2px 6px; border-radius: 4px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
+        .sa-test-btn { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: var(--text-secondary); padding: 8px 12px; border-radius: 6px; font-family: 'Outfit', sans-serif; font-size: 0.78rem; font-weight: 600; cursor: pointer; transition: all 0.15s; }
+        .sa-test-btn:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.2); color: var(--text-primary); }
+        .sa-test-btn:disabled { opacity: 0.4; cursor: not-allowed; }
         .grid-card .gc-arrow { color: var(--text-muted); font-size: 1.2rem; }
         .no-grids-msg { text-align: center; padding: 40px 20px; color: var(--text-muted); font-size: 0.88rem; }
         .no-grids-msg .no-grids-icon { font-size: 2.5rem; margin-bottom: 8px; display: block; }
@@ -902,6 +905,22 @@
                 <!-- Players list -->
                 <div style="font-family:'Bebas Neue',sans-serif;font-size:0.95rem;letter-spacing:2px;color:var(--text-secondary);margin-bottom:8px;">Players</div>
                 <div id="saPlayersList" style="max-height:300px;overflow-y:auto;"></div>
+
+                <!-- Test Mode -->
+                <div style="margin-top:16px;border-top:1px solid rgba(255,255,255,0.08);padding-top:14px;">
+                    <div style="font-family:'Bebas Neue',sans-serif;font-size:0.95rem;letter-spacing:2px;color:var(--danger);margin-bottom:8px;">🧪 Test Mode</div>
+                    <div style="font-size:0.72rem;color:var(--text-muted);margin-bottom:10px;">Fill grid with test players and simulate scoring. Test data can be cleared.</div>
+                    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                        <button onclick="saFillTestPlayers()" id="saFillBtn" class="sa-test-btn" style="flex:1;">👥 Fill Grid</button>
+                        <button onclick="saAssignTestNumbers()" id="saNumBtn" class="sa-test-btn" style="flex:1;">🔢 Assign Numbers</button>
+                    </div>
+                    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px;">
+                        <button onclick="saSimulateScore()" id="saSimScoreBtn" class="sa-test-btn" style="flex:1;">🏈 Sim Score</button>
+                        <button onclick="saSimulateFullGame()" id="saSimFullBtn" class="sa-test-btn" style="flex:1;">⚡ Sim Full Game</button>
+                    </div>
+                    <div id="saTestStatus" style="margin-top:8px;font-size:0.75rem;color:var(--text-muted);text-align:center;"></div>
+                    <button onclick="saClearTestData()" class="sa-test-btn" style="width:100%;margin-top:8px;background:rgba(239,68,68,0.15);color:var(--danger);border-color:rgba(239,68,68,0.3);">🗑️ Clear Test Data</button>
+                </div>
             </div>
 
             <button class="btn-outline" onclick="closeOverlay('superAdminOverlay')">Close</button>
@@ -2272,7 +2291,231 @@
     }
 
     // ══════════════════════════════════════════════════
-    //  TABS & UTILS
+    //  SUPER ADMIN: TEST MODE
+    // ══════════════════════════════════════════════════
+    const TEST_PLAYERS = [
+        { name: 'Alice Johnson', initials: 'AJ' }, { name: 'Bob Smith', initials: 'BS' },
+        { name: 'Carol Davis', initials: 'CD' }, { name: 'Dan Wilson', initials: 'DW' },
+        { name: 'Eve Martinez', initials: 'EM' }, { name: 'Frank Lee', initials: 'FL' },
+        { name: 'Grace Kim', initials: 'GK' }, { name: 'Hank Brown', initials: 'HB' },
+        { name: 'Ivy Chen', initials: 'IC' }, { name: 'Jack Taylor', initials: 'JT' }
+    ];
+
+    function saTestStatus(msg) {
+        const el = document.getElementById('saTestStatus');
+        if (el) el.textContent = msg;
+    }
+
+    async function saFillTestPlayers() {
+        const gid = saSelectedGameId;
+        if (!gid) { showToast('Select a grid first'); return; }
+        const g = saAllGames[gid];
+        const existingCells = Object.keys(g.grid || {}).length;
+        if (existingCells >= 100) { showToast('Grid already full'); return; }
+        if (!await showConfirm(`Fill ${100 - existingCells} empty boxes with test players?`)) return;
+
+        saTestStatus('Filling grid...');
+        const update = {};
+        const emptyCells = [];
+        for (let r = 0; r < 10; r++) for (let c = 0; c < 10; c++) {
+            const key = `${r}_${c}`;
+            if (!g.grid[key]) emptyCells.push(key);
+        }
+
+        const shuffleArr = arr => { const a = [...arr]; for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+        const shuffled = shuffleArr(emptyCells);
+        const playerBoxes = {};
+
+        shuffled.forEach((key, i) => {
+            const tp = TEST_PLAYERS[i % TEST_PLAYERS.length];
+            const uid = `test_${tp.initials.toLowerCase()}`;
+            update[`${GAME_REF}/games/${gid}/grid/${key}`] = { uid, initials: tp.initials, name: tp.name };
+            if (!playerBoxes[uid]) playerBoxes[uid] = { ...tp, count: 0 };
+            playerBoxes[uid].count++;
+        });
+
+        for (const [uid, p] of Object.entries(playerBoxes)) {
+            const existing = g.players[uid];
+            const newCount = (existing?.boxCount || 0) + p.count;
+            update[`${GAME_REF}/games/${gid}/players/${uid}`] = { name: p.name, initials: p.initials, boxCount: newCount, email: `${uid}@test.local`, isTest: true };
+        }
+
+        await db.ref().update(update);
+        const gridSnap = await db.ref(`${GAME_REF}/games/${gid}/grid`).once('value');
+        const playSnap = await db.ref(`${GAME_REF}/games/${gid}/players`).once('value');
+        g.grid = gridSnap.val() || {};
+        g.players = playSnap.val() || {};
+        g.gridCount = Object.keys(g.grid).length;
+        g.playerCount = Object.keys(g.players).length;
+
+        saTestStatus(`Filled ${shuffled.length} boxes with ${Object.keys(playerBoxes).length} test players`);
+        saRenderPlayers(gid);
+        saLoadGrid();
+    }
+
+    async function saAssignTestNumbers() {
+        const gid = saSelectedGameId;
+        if (!gid) { showToast('Select a grid first'); return; }
+        const shuffleArr = arr => { const a = [...arr]; for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+        await db.ref(`${GAME_REF}/games/${gid}/numbers`).set({ cols: shuffleArr([0,1,2,3,4,5,6,7,8,9]), rows: shuffleArr([0,1,2,3,4,5,6,7,8,9]) });
+        saTestStatus('Numbers assigned!');
+        showToast('Test numbers assigned');
+    }
+
+    async function saSimulateScore() {
+        const gid = saSelectedGameId;
+        if (!gid) { showToast('Select a grid first'); return; }
+        const g = saAllGames[gid];
+        const mode = g.config.scoringMode || 'quarters';
+
+        const numSnap = await db.ref(`${GAME_REF}/games/${gid}/numbers`).once('value');
+        const numData = numSnap.val();
+        if (!numData?.cols || !numData?.rows) { showToast('Assign numbers first'); return; }
+
+        const gridSnap = await db.ref(`${GAME_REF}/games/${gid}/grid`).once('value');
+        const liveGrid = gridSnap.val() || {};
+
+        if (mode === 'everyScore') {
+            const evSnap = await db.ref(`${GAME_REF}/games/${gid}/scoreEvents`).once('value');
+            const events = evSnap.val() || [];
+            const geSnap = await db.ref(`${GAME_REF}/games/${gid}/gameEnded`).once('value');
+            if (geSnap.val()) { showToast('Game already ended — reopen first'); return; }
+
+            const last = events.length > 0 ? events[events.length - 1] : { patsFull: 0, hawksFull: 0 };
+            const scoringPlays = [3, 7, 6, 3, 2, 1, 8];
+            const addPts = scoringPlays[Math.floor(Math.random() * scoringPlays.length)];
+            const team = Math.random() > 0.5 ? 'pats' : 'hawks';
+            const patsFull = team === 'pats' ? last.patsFull + addPts : last.patsFull;
+            const hawksFull = team === 'hawks' ? last.hawksFull + addPts : last.hawksFull;
+            const pats = patsFull % 10, hawks = hawksFull % 10;
+            const seq = events.length + 1;
+
+            const ci = numData.cols.indexOf(pats), ri = numData.rows.indexOf(hawks);
+            let winnerName = 'Empty box', winnerInitials = '', winnerUid = null;
+            if (ci !== -1 && ri !== -1) {
+                const cd = liveGrid[`${ri}_${ci}`];
+                if (cd) { winnerName = cd.name; winnerInitials = cd.initials; winnerUid = cd.uid; }
+            }
+
+            events.push({ seq, pats, hawks, patsFull, hawksFull, winnerName, winnerInitials, winnerUid, timestamp: Date.now() });
+            await db.ref(`${GAME_REF}/games/${gid}/scoreEvents`).set(events);
+            saTestStatus(`#${seq}: ${patsFull}-${hawksFull} (${pats},${hawks}) → ${winnerUid ? winnerInitials : 'empty'}`);
+        } else {
+            const scoresSnap = await db.ref(`${GAME_REF}/games/${gid}/scores`).once('value');
+            const sc = scoresSnap.val() || { q1: null, q2: null, q3: null, q4: null };
+            const next = ['q1','q2','q3','q4'].find(q => !sc[q]);
+            if (!next) { showToast('All quarters already scored'); return; }
+
+            const pats = Math.floor(Math.random() * 10);
+            const hawks = Math.floor(Math.random() * 10);
+            sc[next] = { pats, hawks };
+            await db.ref(`${GAME_REF}/games/${gid}/scores`).set(sc);
+            saTestStatus(`${next.toUpperCase()}: PAT ${pats}, SEA ${hawks}`);
+        }
+    }
+
+    async function saSimulateFullGame() {
+        const gid = saSelectedGameId;
+        if (!gid) { showToast('Select a grid first'); return; }
+        const g = saAllGames[gid];
+        const mode = g.config.scoringMode || 'quarters';
+
+        if (!await showConfirm(`Simulate full game (${mode === 'everyScore' ? '8-12 score events' : '4 quarters'})? Overwrites existing scores.`)) return;
+
+        const numSnap = await db.ref(`${GAME_REF}/games/${gid}/numbers`).once('value');
+        if (!numSnap.val()?.cols) {
+            await saAssignTestNumbers();
+            await new Promise(r => setTimeout(r, 500));
+        }
+
+        const numSnap2 = await db.ref(`${GAME_REF}/games/${gid}/numbers`).once('value');
+        const numData = numSnap2.val();
+        const gridSnap = await db.ref(`${GAME_REF}/games/${gid}/grid`).once('value');
+        const liveGrid = gridSnap.val() || {};
+
+        if (mode === 'everyScore') {
+            await db.ref(`${GAME_REF}/games/${gid}/scoreEvents`).remove();
+            await db.ref(`${GAME_REF}/games/${gid}/gameEnded`).remove();
+
+            const scoringPlays = [3, 7, 6, 3, 7, 3, 2, 7, 3, 6, 7, 3];
+            const numEvents = 8 + Math.floor(Math.random() * 5);
+            let patsFull = 0, hawksFull = 0;
+            const events = [];
+
+            // Kickoff 0-0
+            const ci0 = numData.cols.indexOf(0), ri0 = numData.rows.indexOf(0);
+            let w0Name = 'Empty box', w0Init = '', w0Uid = null;
+            if (ci0 !== -1 && ri0 !== -1) { const cd = liveGrid[`${ri0}_${ci0}`]; if (cd) { w0Name = cd.name; w0Init = cd.initials; w0Uid = cd.uid; } }
+            events.push({ seq: 1, pats: 0, hawks: 0, patsFull: 0, hawksFull: 0, winnerName: w0Name, winnerInitials: w0Init, winnerUid: w0Uid, timestamp: Date.now() });
+
+            for (let i = 1; i < numEvents; i++) {
+                const addPts = scoringPlays[Math.floor(Math.random() * scoringPlays.length)];
+                if (Math.random() > 0.5) patsFull += addPts; else hawksFull += addPts;
+                const pats = patsFull % 10, hawks = hawksFull % 10;
+                const ci = numData.cols.indexOf(pats), ri = numData.rows.indexOf(hawks);
+                let wName = 'Empty box', wInit = '', wUid = null;
+                if (ci !== -1 && ri !== -1) { const cd = liveGrid[`${ri}_${ci}`]; if (cd) { wName = cd.name; wInit = cd.initials; wUid = cd.uid; } }
+                events.push({ seq: i + 1, pats, hawks, patsFull, hawksFull, winnerName: wName, winnerInitials: wInit, winnerUid: wUid, timestamp: Date.now() + i * 1000 });
+            }
+
+            await db.ref(`${GAME_REF}/games/${gid}/scoreEvents`).set(events);
+            await db.ref(`${GAME_REF}/games/${gid}/gameEnded`).set(true);
+            saTestStatus(`Simulated ${events.length} events. Final: ${patsFull}-${hawksFull}. Game ended.`);
+        } else {
+            const sc = {};
+            let patsFull = 0, hawksFull = 0;
+            ['q1','q2','q3','q4'].forEach(q => {
+                const addP = [0, 3, 7, 6, 3, 7][Math.floor(Math.random() * 6)];
+                const addH = [0, 3, 7, 6, 3, 7][Math.floor(Math.random() * 6)];
+                patsFull += addP; hawksFull += addH;
+                sc[q] = { pats: patsFull % 10, hawks: hawksFull % 10 };
+            });
+            await db.ref(`${GAME_REF}/games/${gid}/scores`).set(sc);
+            saTestStatus(`4 quarters done. ${['q1','q2','q3','q4'].map(q => `${q.toUpperCase()}(${sc[q].pats},${sc[q].hawks})`).join(' ')}`);
+        }
+        showToast('Full game simulated!');
+    }
+
+    async function saClearTestData() {
+        const gid = saSelectedGameId;
+        if (!gid) { showToast('Select a grid first'); return; }
+        if (!await showConfirm('Clear ALL test data? Removes test players, their boxes, scores, numbers, and score events.')) return;
+
+        const g = saAllGames[gid];
+        const update = {};
+
+        for (const [key, cell] of Object.entries(g.grid || {})) {
+            if (cell.uid?.startsWith('test_')) update[`${GAME_REF}/games/${gid}/grid/${key}`] = null;
+        }
+        for (const uid of Object.keys(g.players || {})) {
+            if (uid.startsWith('test_')) {
+                update[`${GAME_REF}/games/${gid}/players/${uid}`] = null;
+                update[`${GAME_REF}/users/${uid}/games/${gid}`] = null;
+            }
+        }
+
+        update[`${GAME_REF}/games/${gid}/scores`] = null;
+        update[`${GAME_REF}/games/${gid}/numbers`] = null;
+        update[`${GAME_REF}/games/${gid}/scoreEvents`] = null;
+        update[`${GAME_REF}/games/${gid}/gameEnded`] = null;
+
+        await db.ref().update(update);
+
+        const gridSnap = await db.ref(`${GAME_REF}/games/${gid}/grid`).once('value');
+        const playSnap = await db.ref(`${GAME_REF}/games/${gid}/players`).once('value');
+        g.grid = gridSnap.val() || {};
+        g.players = playSnap.val() || {};
+        g.gridCount = Object.keys(g.grid).length;
+        g.playerCount = Object.keys(g.players).length;
+
+        saTestStatus('Test data cleared');
+        showToast('All test data cleared');
+        saRenderPlayers(gid);
+        saLoadGrid();
+    }
+
+    // ══════════════════════════════════════════════════
+    //  TABS & UTILS (2)
     // ══════════════════════════════════════════════════
     function switchTab(t) {
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
