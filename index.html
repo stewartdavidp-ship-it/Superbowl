@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Super Bowl LX Squares</title>
-    <meta name="version" content="6.3.1">
+    <meta name="version" content="6.3.3">
     <meta name="gs-app-id" content="sb-squares">
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -1716,8 +1716,11 @@
 
     async function addScoreEvent() {
         if (!currentGameId || !numbersAssigned || gameEnded) return;
-        const pFull = parseInt(document.getElementById('evPats').value);
-        const hFull = parseInt(document.getElementById('evHawks').value);
+        const pVal = document.getElementById('evPats').value.trim();
+        const hVal = document.getElementById('evHawks').value.trim();
+        if (pVal === '' || hVal === '') { showToast('Enter both scores'); return; }
+        const pFull = Number(pVal);
+        const hFull = Number(hVal);
         if (isNaN(pFull) || isNaN(hFull) || pFull < 0 || hFull < 0) { showToast('Enter valid scores'); return; }
         const pats = pFull % 10, hawks = hFull % 10;
         const seq = scoreEvents.length + 1;
@@ -2172,7 +2175,7 @@
 
             const opt = document.createElement('option');
             opt.value = gid;
-            opt.textContent = `${conf.gameName || 'Unnamed'} [${conf.code}] — ${playerCount} players, ${gridCount}/100`;
+            opt.textContent = `${conf.gameName || 'Unnamed'} [${conf.code}] — ${playerCount} players, ${gridCount}/100 — by ${conf.createdByName || '?'}`;
             sel.appendChild(opt);
         }
 
@@ -2192,7 +2195,11 @@
 
         document.getElementById('saGridName').textContent = g.config.gameName || 'Unnamed';
         const cost = g.config.costPerSquare || 0;
-        document.getElementById('saGridMeta').textContent = `Created by ${g.config.createdByName || '?'} • ${g.playerCount} players • ${g.gridCount}/100 filled • ${cost > 0 ? '$' + cost + '/sq' : 'Free'}`;
+        const adminUid = g.config.createdBy;
+        const adminPlayer = g.players[adminUid];
+        const adminEmail = adminPlayer?.email || adminUid || '?';
+        const modeLabel = (g.config.scoringMode || 'quarters') === 'everyScore' ? '🏈 Every Score' : '📊 Quarters';
+        document.getElementById('saGridMeta').textContent = `Admin: ${g.config.createdByName || '?'} (${adminEmail}) • ${modeLabel} • ${g.playerCount} players • ${g.gridCount}/100 • ${cost > 0 ? '$' + cost + '/sq' : 'Free'}`;
         document.getElementById('saGridCode').textContent = g.config.code;
 
         // Render players
@@ -2256,7 +2263,10 @@
         const opt = sel.querySelector(`option[value="${gid}"]`);
         if (opt) opt.textContent = `${g.config.gameName || 'Unnamed'} [${g.config.code}] — ${g.playerCount} players, ${g.gridCount}/100`;
         // Update meta
-        document.getElementById('saGridMeta').textContent = `Created by ${g.config.createdByName || '?'} • ${g.playerCount} players • ${g.gridCount}/100 filled • ${(g.config.costPerSquare || 0) > 0 ? '$' + g.config.costPerSquare + '/sq' : 'Free'}`;
+        const adminUid2 = g.config.createdBy;
+        const adminPlayer2 = g.players[adminUid2];
+        const adminEmail2 = adminPlayer2?.email || adminUid2 || '?';
+        document.getElementById('saGridMeta').textContent = `Admin: ${g.config.createdByName || '?'} (${adminEmail2}) • ${g.playerCount} players • ${g.gridCount}/100 filled • ${(g.config.costPerSquare || 0) > 0 ? '$' + g.config.costPerSquare + '/sq' : 'Free'}`;
     }
 
     async function saDeleteGrid() {
