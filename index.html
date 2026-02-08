@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Super Bowl LX Squares</title>
-    <meta name="version" content="6.2.3">
+    <meta name="version" content="6.3.0">
     <meta name="gs-app-id" content="sb-squares">
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -648,9 +648,14 @@
             </div>
 
             <div id="tab-players" class="tab-content">
-                <div class="scores-card">
+                <div class="scores-card" id="quarterResultsCard">
                     <h3>Quarter Results</h3>
                     <div class="quarter-grid" id="quarterResults"></div>
+                </div>
+                <div class="scores-card hidden" id="everyScoreResultsCard">
+                    <h3>🏈 Score Change Winners</h3>
+                    <div id="everyScoreResults"></div>
+                    <div id="everyScorePayouts" style="margin-top:14px;"></div>
                 </div>
                 <div class="scores-card">
                     <h3>Players</h3>
@@ -684,11 +689,41 @@
                         <button class="btn-danger hidden" id="clearNumbersBtn" onclick="clearNumbers()">Clear Numbers</button>
                     </div>
                 </div>
-                <div class="admin-card">
+                <div class="admin-card" id="adminScoreQuarters">
                     <h3>Enter Scores</h3>
                     <p>Enter the last digit of each team's score at end of each quarter (0-9). This maps directly to the grid.</p>
                     <div class="score-inputs" id="scoreInputs"></div>
                     <button class="btn-admin" onclick="saveScores()">Save Scores</button>
+                </div>
+                <div class="admin-card hidden" id="adminScoreEvery">
+                    <h3>🏈 Enter Score Change</h3>
+                    <p>Enter the current game score after each scoring play. Last digit of each score maps to the grid.</p>
+                    <div id="everyScoreInputArea">
+                        <div style="display:flex;gap:8px;margin-bottom:10px;align-items:end;">
+                            <div style="flex:1;text-align:center;">
+                                <label style="display:block;font-size:0.7rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">PAT Score</label>
+                                <input type="number" id="evPats" min="0" max="99" value="" placeholder="0" style="width:100%;padding:10px;background:var(--bg-tertiary);border:1px solid rgba(255,255,255,0.1);border-radius:6px;color:var(--text-primary);font-size:1.2rem;text-align:center;font-family:'Bebas Neue',sans-serif;letter-spacing:2px;">
+                            </div>
+                            <div style="flex:0;padding-bottom:8px;font-size:1.2rem;color:var(--text-muted);">—</div>
+                            <div style="flex:1;text-align:center;">
+                                <label style="display:block;font-size:0.7rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">SEA Score</label>
+                                <input type="number" id="evHawks" min="0" max="99" value="" placeholder="0" style="width:100%;padding:10px;background:var(--bg-tertiary);border:1px solid rgba(255,255,255,0.1);border-radius:6px;color:var(--text-primary);font-size:1.2rem;text-align:center;font-family:'Bebas Neue',sans-serif;letter-spacing:2px;">
+                            </div>
+                        </div>
+                        <div style="display:flex;gap:8px;margin-bottom:8px;">
+                            <div style="flex:1;font-size:0.75rem;color:var(--text-muted);text-align:center;" id="evDigitPreview">Grid: (0, 0)</div>
+                        </div>
+                        <button class="btn-admin" onclick="addScoreEvent()" id="addScoreEventBtn">Add Score</button>
+                    </div>
+                    <div id="everyScoreGameOver" class="hidden" style="text-align:center;padding:16px 0;">
+                        <div style="font-size:1.1rem;color:var(--gold);font-weight:600;">🏆 Game Over</div>
+                        <div style="font-size:0.8rem;color:var(--text-muted);margin-top:4px;">Final payouts calculated below</div>
+                    </div>
+                    <div style="margin-top:12px;display:flex;gap:8px;">
+                        <button class="btn-danger" onclick="undoLastScoreEvent()" id="undoScoreBtn" style="flex:1;" disabled>↩ Undo Last</button>
+                        <button class="btn-admin" onclick="endEveryScoreGame()" id="endGameBtn" style="flex:1;background:var(--gold);color:#000;">🏁 End Game</button>
+                    </div>
+                    <div id="scoreEventsList" style="margin-top:14px;"></div>
                 </div>
                 <div class="admin-card">
                     <h3>👤 Manage Players</h3>
@@ -785,6 +820,14 @@
                 <div class="helper">Total pot: <strong id="createPotPreview">$100</strong> (100 squares)</div>
             </div>
             <div class="form-group">
+                <label>Scoring Mode</label>
+                <select id="createScoringMode" onchange="updateScoringModeUI()">
+                    <option value="quarters" selected>Four Quarters — payout at end of each quarter</option>
+                    <option value="everyScore">Every Score — payout on every score change</option>
+                </select>
+                <div class="helper" id="scoringModeHelper">Winners determined by last digit of each team's score at the end of each quarter.</div>
+            </div>
+            <div class="form-group" id="payoutSection">
                 <label>Payout Per Quarter ($)</label>
                 <div class="payout-grid">
                     <div class="payout-item"><label>Q1</label><input type="number" id="payQ1" value="40" min="0" oninput="updatePayoutTotal()"></div>
@@ -892,6 +935,8 @@
     let gridData = {}, playersData = {};
     let colNumbers = null, rowNumbers = null, numbersAssigned = false;
     let scores = { q1: null, q2: null, q3: null, q4: null };
+    let scoreEvents = []; // For everyScore mode
+    let gameEnded = false; // For everyScore mode
     let myGames = {};
     let gameListeners = [];
     let pickMethod = 'auto';
@@ -1191,6 +1236,13 @@
     function updatePayoutTotal() {
         const cost = parseInt(document.getElementById('createCostPerSquare').value) || 0;
         const pot = cost * 100;
+        const mode = document.getElementById('createScoringMode').value;
+        if (mode === 'everyScore') {
+            const el = document.getElementById('payoutTotal');
+            el.textContent = pot > 0 ? `Pot: $${pot} — divided equally per score change` : 'Free pool';
+            el.className = 'payout-total valid';
+            return;
+        }
         const total = ['payQ1','payQ2','payQ3','payQ4'].reduce((s,id) => s + (parseInt(document.getElementById(id).value) || 0), 0);
         const el = document.getElementById('payoutTotal');
         if (pot === 0) {
@@ -1204,6 +1256,19 @@
             el.className = 'payout-total invalid';
         }
     }
+    function updateScoringModeUI() {
+        const mode = document.getElementById('createScoringMode').value;
+        const payoutSection = document.getElementById('payoutSection');
+        const helper = document.getElementById('scoringModeHelper');
+        if (mode === 'everyScore') {
+            payoutSection.style.display = 'none';
+            helper.textContent = 'Every score change wins! Pot divided equally among all scoring events. Starts with 0-0 kickoff.';
+        } else {
+            payoutSection.style.display = '';
+            helper.textContent = 'Winners determined by last digit of each team\'s score at the end of each quarter.';
+        }
+        updatePayoutTotal();
+    }
     function generateCode() {
         const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ';
         let code = ''; for (let i = 0; i < 5; i++) code += chars[Math.floor(Math.random() * chars.length)]; return code;
@@ -1213,23 +1278,29 @@
         if (!name) { showToast('Enter a grid name'); return; }
         const cost = parseInt(document.getElementById('createCostPerSquare').value) || 0;
         const pot = cost * 100;
-        const q1 = parseInt(document.getElementById('payQ1').value) || 0;
-        const q2 = parseInt(document.getElementById('payQ2').value) || 0;
-        const q3 = parseInt(document.getElementById('payQ3').value) || 0;
-        const q4 = parseInt(document.getElementById('payQ4').value) || 0;
-        if (pot > 0 && q1 + q2 + q3 + q4 !== pot) { showToast(`Payouts must total $${pot}`); return; }
+        const scoringMode = document.getElementById('createScoringMode').value;
+        let payouts = { q1: 0, q2: 0, q3: 0, q4: 0 };
+        if (scoringMode === 'quarters') {
+            const q1 = parseInt(document.getElementById('payQ1').value) || 0;
+            const q2 = parseInt(document.getElementById('payQ2').value) || 0;
+            const q3 = parseInt(document.getElementById('payQ3').value) || 0;
+            const q4 = parseInt(document.getElementById('payQ4').value) || 0;
+            if (pot > 0 && q1 + q2 + q3 + q4 !== pot) { showToast(`Payouts must total $${pot}`); return; }
+            payouts = { q1, q2, q3, q4 };
+        }
         const btn = document.getElementById('createGameBtn');
         btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Creating...';
         try {
             let code, exists = true;
             while (exists) { code = generateCode(); const s = await db.ref(`${GAME_REF}/codes/${code}`).once('value'); exists = s.val() !== null; }
             const gameId = db.ref(`${GAME_REF}/games`).push().key;
-            const config = { gameName: name, code, costPerSquare: cost, payouts: { q1, q2, q3, q4 }, createdBy: currentUser.uid, createdByName: currentUser.displayName || currentUser.email, createdAt: Date.now() };
-            await db.ref().update({
+            const config = { gameName: name, code, costPerSquare: cost, payouts, scoringMode, createdBy: currentUser.uid, createdByName: currentUser.displayName || currentUser.email, createdAt: Date.now() };
+            const updates = {
                 [`${GAME_REF}/games/${gameId}/config`]: config,
                 [`${GAME_REF}/codes/${code}`]: gameId,
                 [`${GAME_REF}/users/${currentUser.uid}/games/${gameId}`]: true
-            });
+            };
+            await db.ref().update(updates);
             closeOverlay('createGameOverlay');
             showToast('Grid created! \ud83c\udfc8');
             openGame(gameId);
@@ -1283,6 +1354,12 @@
         document.getElementById('gibCode').textContent = currentGameConfig.code;
         document.getElementById('gameInfoBar').classList.remove('hidden');
         document.getElementById('adminTabBtn').classList.toggle('hidden', !isGameAdmin);
+        // Show correct scoring UI based on mode
+        const mode = currentGameConfig.scoringMode || 'quarters';
+        document.getElementById('adminScoreQuarters').classList.toggle('hidden', mode !== 'quarters');
+        document.getElementById('adminScoreEvery').classList.toggle('hidden', mode !== 'everyScore');
+        document.getElementById('quarterResultsCard').classList.toggle('hidden', mode !== 'quarters');
+        document.getElementById('everyScoreResultsCard').classList.toggle('hidden', mode !== 'everyScore');
         await buildGameSwitcher();
         switchTab('grid'); renderGrid(); buildScoreInputs();
         attachGameListeners(gameId);
@@ -1352,7 +1429,7 @@
     // ══════════════════════════════════════════════════
     //  FIREBASE LISTENERS (per-game)
     // ══════════════════════════════════════════════════
-    function detachGameListeners() { gameListeners.forEach(({ref,event,cb}) => ref.off(event,cb)); gameListeners = []; gridData={}; playersData={}; colNumbers=null; rowNumbers=null; numbersAssigned=false; scores={q1:null,q2:null,q3:null,q4:null}; }
+    function detachGameListeners() { gameListeners.forEach(({ref,event,cb}) => ref.off(event,cb)); gameListeners = []; gridData={}; playersData={}; colNumbers=null; rowNumbers=null; numbersAssigned=false; scores={q1:null,q2:null,q3:null,q4:null}; scoreEvents=[]; gameEnded=false; }
 
     function attachGameListeners(gameId) {
         const g = `${GAME_REF}/games/${gameId}`;
@@ -1360,7 +1437,7 @@
         gameListeners.push({ref:db.ref(`${g}/grid`),event:'value',cb:gcb});
         const pcb = db.ref(`${g}/players`).on('value', s => { playersData = s.val() || {}; checkSetup(); renderPlayers(); });
         gameListeners.push({ref:db.ref(`${g}/players`),event:'value',cb:pcb});
-        const ncb = db.ref(`${g}/numbers`).on('value', s => { const v=s.val(); if(v&&v.cols&&v.rows){colNumbers=v.cols;rowNumbers=v.rows;numbersAssigned=true;}else{colNumbers=null;rowNumbers=null;numbersAssigned=false;} renderGrid(); updateNumbersUI(); renderQuarters(); });
+        const ncb = db.ref(`${g}/numbers`).on('value', s => { const v=s.val(); if(v&&v.cols&&v.rows){colNumbers=v.cols;rowNumbers=v.rows;numbersAssigned=true;}else{colNumbers=null;rowNumbers=null;numbersAssigned=false;} renderGrid(); updateNumbersUI(); renderQuarters(); checkKickoffEvent(); });
         gameListeners.push({ref:db.ref(`${g}/numbers`),event:'value',cb:ncb});
         const scb = db.ref(`${g}/scores`).on('value', s => {
             const oldScores={...scores}; scores=s.val()||{q1:null,q2:null,q3:null,q4:null};
@@ -1368,6 +1445,25 @@
             renderQuarters(); renderPlayers(); renderGrid(); populateScoreInputs();
         });
         gameListeners.push({ref:db.ref(`${g}/scores`),event:'value',cb:scb});
+        // Every-score mode listeners
+        const secb = db.ref(`${g}/scoreEvents`).on('value', s => {
+            const oldLen = scoreEvents.length;
+            scoreEvents = s.val() || [];
+            // Trigger celebration for non-admin when new events appear
+            if (numbersAssigned && !isGameAdmin && scoreEvents.length > oldLen) {
+                const newEvents = scoreEvents.slice(oldLen);
+                const w = newEvents.map(ev => {
+                    const ci = colNumbers.indexOf(ev.pats), ri = rowNumbers.indexOf(ev.hawks);
+                    if (ci !== -1 && ri !== -1) { const cd = gridData[`${ri}_${ci}`]; if (cd) return { quarter: `#${ev.seq}`, name: cd.name, initials: cd.initials, pats: ev.pats, hawks: ev.hawks }; }
+                    return null;
+                }).filter(Boolean);
+                if (w.length > 0) { celebrationQueue = [...w]; showNextCelebration(); }
+            }
+            renderScoreEvents(); renderQuarters(); renderPlayers(); renderGrid();
+        });
+        gameListeners.push({ref:db.ref(`${g}/scoreEvents`),event:'value',cb:secb});
+        const gecb = db.ref(`${g}/gameEnded`).on('value', s => { gameEnded = !!s.val(); renderScoreEvents(); renderQuarters(); renderPlayers(); });
+        gameListeners.push({ref:db.ref(`${g}/gameEnded`),event:'value',cb:gecb});
     }
 
     function gRef(path) { return `${GAME_REF}/games/${currentGameId}/${path}`; }
@@ -1586,6 +1682,237 @@
     }
 
     // ══════════════════════════════════════════════════
+    //  EVERY SCORE MODE
+    // ══════════════════════════════════════════════════
+    
+    // Update digit preview as admin types
+    document.addEventListener('input', function(e) {
+        if (e.target.id === 'evPats' || e.target.id === 'evHawks') {
+            const p = parseInt(document.getElementById('evPats').value) || 0;
+            const h = parseInt(document.getElementById('evHawks').value) || 0;
+            const el = document.getElementById('evDigitPreview');
+            if (el) el.textContent = `Grid: (${p % 10}, ${h % 10})`;
+        }
+    });
+
+    async function addScoreEvent() {
+        if (!currentGameId || !numbersAssigned || gameEnded) return;
+        const pFull = parseInt(document.getElementById('evPats').value);
+        const hFull = parseInt(document.getElementById('evHawks').value);
+        if (isNaN(pFull) || isNaN(hFull) || pFull < 0 || hFull < 0) { showToast('Enter valid scores'); return; }
+        const pats = pFull % 10, hawks = hFull % 10;
+        const seq = scoreEvents.length + 1;
+        
+        // Determine winner for this score
+        const ci = colNumbers.indexOf(pats), ri = rowNumbers.indexOf(hawks);
+        let winnerName = 'Empty box', winnerInitials = '', winnerUid = null;
+        if (ci !== -1 && ri !== -1) {
+            const cd = gridData[`${ri}_${ci}`];
+            if (cd) { winnerName = cd.name; winnerInitials = cd.initials; winnerUid = cd.uid; }
+        }
+        
+        const event = { seq, pats, hawks, patsFull: pFull, hawksFull: hFull, winnerName, winnerInitials, winnerUid, timestamp: Date.now() };
+        const newEvents = [...scoreEvents, event];
+        
+        const btn = document.getElementById('addScoreEventBtn');
+        btn.disabled = true; btn.innerHTML = '<span class="spinner"></span>';
+        try {
+            await db.ref(gRef('scoreEvents')).set(newEvents);
+            document.getElementById('evPats').value = '';
+            document.getElementById('evHawks').value = '';
+            document.getElementById('evDigitPreview').textContent = 'Grid: (?, ?)';
+            // Trigger celebration for admin
+            if (winnerUid) {
+                celebrationQueue = [{ quarter: `Score #${seq}`, name: winnerName, initials: winnerInitials, pats, hawks }];
+                showNextCelebration();
+            } else {
+                showToast(`Score #${seq} recorded`);
+            }
+        } catch (e) { showToast('Error: ' + e.message); }
+        finally { btn.disabled = false; btn.textContent = 'Add Score'; }
+    }
+
+    async function undoLastScoreEvent() {
+        if (!currentGameId || scoreEvents.length === 0 || gameEnded) return;
+        if (!await showConfirm(`Remove last score (#${scoreEvents.length})?`)) return;
+        const newEvents = scoreEvents.slice(0, -1);
+        await db.ref(gRef('scoreEvents')).set(newEvents.length > 0 ? newEvents : null);
+        showToast('Last score removed');
+    }
+
+    async function endEveryScoreGame() {
+        if (!currentGameId || gameEnded) return;
+        if (scoreEvents.length === 0) { showToast('No scores recorded yet'); return; }
+        if (!await showConfirm(`End game with ${scoreEvents.length} score event${scoreEvents.length > 1 ? 's' : ''}? This will calculate final payouts.`)) return;
+        await db.ref(gRef('gameEnded')).set(true);
+        showToast('Game over! Payouts calculated.');
+    }
+
+    async function reopenEveryScoreGame() {
+        if (!currentGameId || !gameEnded) return;
+        if (!await showConfirm('Reopen game? This will remove the game-over status.')) return;
+        await db.ref(gRef('gameEnded')).set(null);
+        showToast('Game reopened');
+    }
+
+    function renderScoreEvents() {
+        const mode = currentGameConfig?.scoringMode || 'quarters';
+        if (mode !== 'everyScore') return;
+        
+        // Update admin UI state
+        const inputArea = document.getElementById('everyScoreInputArea');
+        const gameOverArea = document.getElementById('everyScoreGameOver');
+        const undoBtn = document.getElementById('undoScoreBtn');
+        const endBtn = document.getElementById('endGameBtn');
+        
+        if (inputArea) inputArea.classList.toggle('hidden', gameEnded);
+        if (gameOverArea) gameOverArea.classList.toggle('hidden', !gameEnded);
+        if (undoBtn) { undoBtn.disabled = scoreEvents.length === 0 || gameEnded; }
+        if (endBtn) {
+            if (gameEnded) {
+                endBtn.textContent = '↩ Reopen Game';
+                endBtn.style.background = 'var(--bg-tertiary)';
+                endBtn.style.color = 'var(--text-primary)';
+                endBtn.onclick = reopenEveryScoreGame;
+            } else {
+                endBtn.textContent = '🏁 End Game';
+                endBtn.style.background = 'var(--gold)';
+                endBtn.style.color = '#000';
+                endBtn.onclick = endEveryScoreGame;
+            }
+        }
+
+        // Render score events list (admin view)
+        const listEl = document.getElementById('scoreEventsList');
+        if (listEl && scoreEvents.length > 0) {
+            listEl.innerHTML = '<div style="font-size:0.72rem;color:var(--text-muted);margin-bottom:6px;font-weight:600;">SCORE LOG</div>' +
+                scoreEvents.map((ev, i) => {
+                    const isFirst = i === 0;
+                    return `<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 8px;background:var(--bg-tertiary);border-radius:6px;margin-bottom:3px;font-size:0.78rem;">
+                        <div><span style="color:var(--text-muted);">#${ev.seq}</span> <strong style="color:var(--text-primary);">${ev.patsFull}-${ev.hawksFull}</strong> <span style="color:var(--text-muted);">(${ev.pats},${ev.hawks})</span></div>
+                        <div style="color:var(--gold);font-weight:600;">${ev.winnerUid ? `🏆 ${esc(ev.winnerInitials)}` : '—'}</div>
+                    </div>`;
+                }).join('');
+        } else if (listEl) {
+            listEl.innerHTML = '<div style="text-align:center;color:var(--text-muted);font-size:0.78rem;padding:12px 0;">No scores yet — game starts with kickoff (0-0)</div>';
+        }
+
+        // Render results view (visible to all)
+        const resultsEl = document.getElementById('everyScoreResults');
+        const payoutsEl = document.getElementById('everyScorePayouts');
+        if (!resultsEl) return;
+
+        if (scoreEvents.length === 0) {
+            resultsEl.innerHTML = '<div style="text-align:center;color:var(--text-muted);font-size:0.82rem;padding:16px 0;">Waiting for scores...</div>';
+            if (payoutsEl) payoutsEl.innerHTML = '';
+            return;
+        }
+
+        // Winners table
+        resultsEl.innerHTML = '<table style="width:100%;font-size:0.78rem;border-collapse:collapse;">' +
+            '<tr style="color:var(--text-muted);font-size:0.68rem;text-transform:uppercase;letter-spacing:1px;">' +
+            '<th style="text-align:left;padding:4px 6px;">#</th>' +
+            '<th style="text-align:left;padding:4px 6px;">Score</th>' +
+            '<th style="text-align:left;padding:4px 6px;">Grid</th>' +
+            '<th style="text-align:right;padding:4px 6px;">Winner</th></tr>' +
+            scoreEvents.map(ev => 
+                `<tr style="border-top:1px solid rgba(255,255,255,0.05);">
+                    <td style="padding:5px 6px;color:var(--text-muted);">${ev.seq}</td>
+                    <td style="padding:5px 6px;font-weight:600;">${ev.patsFull}-${ev.hawksFull}</td>
+                    <td style="padding:5px 6px;color:var(--text-muted);">(${ev.pats},${ev.hawks})</td>
+                    <td style="padding:5px 6px;text-align:right;color:${ev.winnerUid ? 'var(--gold)' : 'var(--text-muted)'};font-weight:600;">${ev.winnerUid ? `🏆 ${esc(ev.winnerInitials)} — ${esc(ev.winnerName.split(' ')[0])}` : 'Empty'}</td>
+                </tr>`
+            ).join('') + '</table>';
+
+        // Payout summary
+        if (!payoutsEl) return;
+        const cost = currentGameConfig?.costPerSquare || 0;
+        const pot = cost * 100;
+        const totalEvents = scoreEvents.length;
+        const perEvent = pot > 0 ? pot / totalEvents : 0;
+
+        if (!gameEnded) {
+            payoutsEl.innerHTML = `<div style="text-align:center;padding:10px;background:var(--bg-tertiary);border-radius:8px;font-size:0.78rem;">
+                <div style="color:var(--text-muted);">${totalEvents} score${totalEvents > 1 ? 's' : ''} so far</div>
+                ${pot > 0 ? `<div style="color:var(--text-secondary);margin-top:4px;">Current rate: <strong style="color:var(--gold);">$${perEvent.toFixed(2)}</strong> per score change</div>
+                <div style="color:var(--text-muted);font-size:0.7rem;margin-top:2px;">($${pot} pot ÷ ${totalEvents} events)</div>` : ''}
+            </div>`;
+            return;
+        }
+
+        // Game over — calculate final payouts
+        const winnerTally = {};
+        scoreEvents.forEach(ev => {
+            if (ev.winnerUid) {
+                if (!winnerTally[ev.winnerUid]) winnerTally[ev.winnerUid] = { name: ev.winnerName, initials: ev.winnerInitials, count: 0 };
+                winnerTally[ev.winnerUid].count++;
+            }
+        });
+
+        const unclaimed = scoreEvents.filter(ev => !ev.winnerUid).length;
+        const sorted = Object.values(winnerTally).sort((a, b) => b.count - a.count);
+        
+        // Verification
+        const totalPaidOut = sorted.reduce((s, w) => s + w.count * perEvent, 0);
+        const unclaimedAmount = unclaimed * perEvent;
+
+        payoutsEl.innerHTML = `<div style="background:var(--bg-tertiary);border-radius:8px;padding:12px;">
+            <div style="font-size:0.72rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;font-weight:600;">🏆 Final Payouts</div>
+            <div style="display:flex;justify-content:space-between;font-size:0.78rem;color:var(--text-secondary);margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid rgba(255,255,255,0.05);">
+                <span>${totalEvents} score events × $${perEvent.toFixed(2)} each</span>
+                <span style="color:var(--gold);font-weight:600;">$${pot} pot</span>
+            </div>
+            ${sorted.map(w => 
+                `<div style="display:flex;justify-content:space-between;align-items:center;padding:5px 0;font-size:0.82rem;">
+                    <div><strong style="color:var(--text-primary);">${esc(w.initials)}</strong> <span style="color:var(--text-muted);">— ${esc(w.name.split(' ')[0])}</span> <span style="color:var(--text-secondary);">(${w.count}×)</span></div>
+                    <div style="color:var(--gold);font-weight:700;font-size:0.9rem;">$${(w.count * perEvent).toFixed(2)}</div>
+                </div>`
+            ).join('')}
+            ${unclaimed > 0 ? `<div style="display:flex;justify-content:space-between;padding:5px 0;font-size:0.78rem;color:var(--text-muted);border-top:1px solid rgba(255,255,255,0.05);margin-top:4px;">
+                <span>Unclaimed boxes (${unclaimed}×)</span><span>$${unclaimedAmount.toFixed(2)}</span></div>` : ''}
+            <div style="display:flex;justify-content:space-between;padding:8px 0 0;font-size:0.78rem;border-top:1px solid rgba(255,255,255,0.08);margin-top:6px;">
+                <span style="color:var(--text-secondary);font-weight:600;">Total paid out</span>
+                <span style="color:${Math.abs(totalPaidOut + unclaimedAmount - pot) < 0.01 ? 'var(--success)' : 'var(--danger)'};font-weight:600;">$${(totalPaidOut + unclaimedAmount).toFixed(2)} ${Math.abs(totalPaidOut + unclaimedAmount - pot) < 0.01 ? '✓' : '⚠️'}</span>
+            </div>
+        </div>`;
+    }
+
+    // Also add initial 0-0 score event when numbers are assigned (if everyScore mode and no events yet)
+    function checkKickoffEvent() {
+        if (!currentGameId || !isGameAdmin || !numbersAssigned) return;
+        const mode = currentGameConfig?.scoringMode || 'quarters';
+        if (mode !== 'everyScore' || scoreEvents.length > 0 || gameEnded) return;
+        // Auto-prompt for kickoff
+        const ci = colNumbers.indexOf(0), ri = rowNumbers.indexOf(0);
+        let winnerName = 'Empty box', winnerInitials = '', winnerUid = null;
+        if (ci !== -1 && ri !== -1) {
+            const cd = gridData[`${ri}_${ci}`];
+            if (cd) { winnerName = cd.name; winnerInitials = cd.initials; winnerUid = cd.uid; }
+        }
+        const kickoff = { seq: 1, pats: 0, hawks: 0, patsFull: 0, hawksFull: 0, winnerName, winnerInitials, winnerUid, timestamp: Date.now() };
+        showConfirm('Add kickoff score (0-0) as first winner?').then(ok => {
+            if (ok) db.ref(gRef('scoreEvents')).set([kickoff]).then(() => showToast('Kickoff 0-0 recorded! 🏈'));
+        });
+    }
+
+    // ══════════════════════════════════════════════════
+    //  EVERY SCORE: getWinnerCells override
+    // ══════════════════════════════════════════════════
+    const _origGetWinnerCells = getWinnerCells;
+    getWinnerCells = function() {
+        const mode = currentGameConfig?.scoringMode || 'quarters';
+        if (mode === 'everyScore') {
+            if (!numbersAssigned || scoreEvents.length === 0) return [];
+            return scoreEvents.map(ev => {
+                const ci = colNumbers.indexOf(ev.pats), ri = rowNumbers.indexOf(ev.hawks);
+                if (ci !== -1 && ri !== -1) return `${ri}_${ci}`;
+                return null;
+            }).filter(Boolean);
+        }
+        return _origGetWinnerCells();
+    };
+
+    // ══════════════════════════════════════════════════
     //  PLAYERS
     // ══════════════════════════════════════════════════
     function renderPlayers() {
@@ -1606,7 +1933,8 @@
             .map(p => {
                 const me = currentUser && p.uid === currentUser.uid;
                 const costStr = cost > 0 ? `$${p.cnt * cost}` : '—';
-                const winStr = p.win > 0 ? `$${p.win}` : (cost > 0 ? '$0' : '—');
+                const winFmt = Number.isInteger(p.win) ? `$${p.win}` : `$${p.win.toFixed(2)}`;
+                const winStr = p.win > 0 ? winFmt : (cost > 0 ? '$0' : '—');
                 return `<tr class="${me?'is-me':''}"><td>${esc(p.name.split(' ')[0])}${me?' (you)':''}</td><td><span class="initials-badge">${esc(p.initials)}</span></td><td>${p.cnt}</td><td>${costStr}</td><td class="winnings ${p.win?'':'zero'}">${winStr}</td></tr>`;
             }).join('');
 
@@ -1615,6 +1943,12 @@
 
     function calcWin(uid, pot, payouts) {
         if (!numbersAssigned || !pot) return 0;
+        const mode = currentGameConfig?.scoringMode || 'quarters';
+        if (mode === 'everyScore') {
+            if (scoreEvents.length === 0) return 0;
+            const perEvent = pot / scoreEvents.length;
+            return scoreEvents.filter(ev => ev.winnerUid === uid).length * perEvent;
+        }
         let t = 0;
         ['q1','q2','q3','q4'].forEach(q => {
             const s = scores[q];
