@@ -1,0 +1,32 @@
+SB Squares — Release Notes
+===========================
+
+v6.4.0 — 2026-02-09
+--------------------
+Redesigned square claiming to a sequential 3-step wizard.
+
+Users were confused by the previous all-in-one form — they
+missed filling in initials because the screen had too much
+going on. Now each step gets its own focused screen:
+
+Step 1: Enter your initials (2-3 letters)
+Step 2: Pick how many squares (no default — must choose)
+Step 3: Choose pick method (auto or manual)
+
+Also improved auto-select: random picks now spread across
+different rows and columns instead of pure random. If you
+pick 5 squares, they'll try to land in 5 different rows
+and 5 different columns for better grid coverage.
+
+v6.3.6 — 2026-02-09
+--------------------
+Stable release for Super Bowl LX.
+
+Features:
+- Multi-game support with real-time Firebase sync
+- Join games via share code or QR code
+- Configurable payout structures and scoring modes
+- Random or manual square selection
+- Quarter-by-quarter scoring with winner detection
+- Sound effects for interactions
+- Dark theme with Patriots/Seahawks branding
