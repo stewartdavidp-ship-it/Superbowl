@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Super Bowl LX Squares</title>
-    <meta name="version" content="6.3.6">
+    <meta name="version" content="6.4.0">
     <meta name="gs-app-id" content="sb-squares">
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -182,6 +182,12 @@
         .btn-gold { background: linear-gradient(135deg, var(--gold), var(--gold-dim)); color: #1a1a1a; border: none; border-radius: 8px; padding: 13px 24px; font-family: 'Outfit', sans-serif; font-weight: 700; font-size: 0.95rem; cursor: pointer; width: 100%; transition: transform 0.1s, box-shadow 0.1s; margin-top: 4px; }
         .btn-gold:hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(255,182,18,0.3); }
         .btn-gold:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+        .step-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--bg-tertiary); border: 1px solid rgba(255,255,255,0.15); transition: all 0.3s; }
+        .step-dot.active { background: var(--gold); border-color: var(--gold); width: 28px; border-radius: 5px; }
+        .step-dot.done { background: var(--success); border-color: var(--success); }
+        .pick-method-btn { display: flex; align-items: center; gap: 12px; width: 100%; padding: 16px; background: var(--bg-tertiary); border: 2px solid rgba(255,255,255,0.1); border-radius: 10px; color: var(--text-primary); font-family: 'Outfit', sans-serif; font-size: 0.9rem; cursor: pointer; text-align: left; transition: all 0.2s; }
+        .pick-method-btn:hover { border-color: rgba(255,255,255,0.25); }
+        .pick-method-btn.active { border-color: var(--gold); background: rgba(255,182,18,0.08); }
 
         /* ── Grid ── */
         .grid-info { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; font-size: 0.82rem; color: var(--text-secondary); }
@@ -774,30 +780,65 @@
 
     <div id="setupOverlay" class="overlay hidden">
         <div class="overlay-card">
-            <h2>Claim Your Squares</h2>
-            <div class="sub" id="setupSub">Pick your initials and how many boxes you want.</div>
-            <div class="form-group">
-                <label>Your Initials (2-3 letters)</label>
-                <input type="text" id="initialsInput" maxlength="3" placeholder="e.g. DS" autocomplete="off" style="text-transform:uppercase; letter-spacing:2px; font-weight:700;">
-                <div class="error-text" id="initialsError"></div>
+            <!-- Step indicator -->
+            <div id="stepIndicator" style="display:flex;justify-content:center;gap:8px;margin-bottom:16px;">
+                <div class="step-dot active" id="stepDot1"></div>
+                <div class="step-dot" id="stepDot2"></div>
+                <div class="step-dot" id="stepDot3"></div>
             </div>
-            <div class="form-group">
-                <label>Number of Boxes (max 10)</label>
-                <select id="boxCountSelect"></select>
-                <div class="helper" id="costHelper">$1 per box &bull; Total: <strong id="costPreview">$0</strong></div>
+
+            <!-- STEP 1: Initials -->
+            <div id="setupStep1">
+                <h2>What Are Your Initials?</h2>
+                <div class="sub">These will appear on your squares so everyone knows they're yours.</div>
+                <div class="form-group">
+                    <label>Your Initials (2-3 letters)</label>
+                    <input type="text" id="initialsInput" maxlength="3" placeholder="e.g. DS" autocomplete="off" style="text-transform:uppercase; letter-spacing:2px; font-weight:700; font-size:1.4rem; text-align:center; padding:16px;">
+                    <div class="error-text" id="initialsError"></div>
+                </div>
+                <button class="btn-gold" id="step1NextBtn" onclick="setupNextStep(2)">Next →</button>
             </div>
-            <div class="form-group">
-                <label>How do you want to pick?</label>
-                <div style="display:flex;gap:8px;margin-top:4px;">
-                    <button type="button" id="pickAuto" class="btn-gold" style="flex:1;padding:11px 10px;font-size:0.85rem;" onclick="setPickMethod('auto')">
-                        🎲 Auto Select
-                    </button>
-                    <button type="button" id="pickManual" class="btn-gold" style="flex:1;padding:11px 10px;font-size:0.85rem;background:var(--bg-tertiary);color:var(--text-secondary);border:1px solid rgba(255,255,255,0.15);" onclick="setPickMethod('manual')">
-                        👆 Pick My Own
-                    </button>
+
+            <!-- STEP 2: Box Count -->
+            <div id="setupStep2" style="display:none;">
+                <h2>How Many Squares?</h2>
+                <div class="sub" id="step2Sub">Pick how many squares you want to claim.</div>
+                <div class="form-group">
+                    <label>Number of Squares</label>
+                    <select id="boxCountSelect" style="font-size:1.1rem;padding:14px 12px;text-align:center;"></select>
+                    <div class="helper" id="costHelper"></div>
+                </div>
+                <div style="display:flex;gap:8px;">
+                    <button class="btn-gold" style="flex:0 0 auto;background:var(--bg-tertiary);color:var(--text-secondary);border:1px solid rgba(255,255,255,0.15);width:auto;padding:13px 20px;" onclick="setupNextStep(1)">← Back</button>
+                    <button class="btn-gold" id="step2NextBtn" onclick="setupNextStep(3)" style="flex:1;">Next →</button>
                 </div>
             </div>
-            <button class="btn-gold" id="claimBtn" onclick="claimBoxes()">Claim Boxes</button>
+
+            <!-- STEP 3: Pick Method -->
+            <div id="setupStep3" style="display:none;">
+                <h2>How Do You Want to Pick?</h2>
+                <div class="sub" id="step3Sub">Choose how your squares are selected.</div>
+                <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:16px;">
+                    <button type="button" id="pickAuto" class="pick-method-btn active" onclick="setPickMethod('auto')">
+                        <span style="font-size:1.5rem;">🎲</span>
+                        <div>
+                            <strong>Auto Select</strong>
+                            <div style="font-size:0.75rem;color:var(--text-secondary);margin-top:2px;">Randomly placed — spread across the grid</div>
+                        </div>
+                    </button>
+                    <button type="button" id="pickManual" class="pick-method-btn" onclick="setPickMethod('manual')">
+                        <span style="font-size:1.5rem;">👆</span>
+                        <div>
+                            <strong>Pick My Own</strong>
+                            <div style="font-size:0.75rem;color:var(--text-secondary);margin-top:2px;">Tap the grid to choose your squares</div>
+                        </div>
+                    </button>
+                </div>
+                <div style="display:flex;gap:8px;">
+                    <button class="btn-gold" style="flex:0 0 auto;background:var(--bg-tertiary);color:var(--text-secondary);border:1px solid rgba(255,255,255,0.15);width:auto;padding:13px 20px;" onclick="setupNextStep(2)">← Back</button>
+                    <button class="btn-gold" id="claimBtn" onclick="claimBoxes()" style="flex:1;">Claim Squares</button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -1512,37 +1553,155 @@
         }
     }
 
+    let currentSetupStep = 1;
+
     function showClaimOverlay() {
         if (!currentGameConfig) return;
+        currentSetupStep = 1;
         buildBoxSelect();
+        // Reset to step 1
+        document.getElementById('setupStep1').style.display = '';
+        document.getElementById('setupStep2').style.display = 'none';
+        document.getElementById('setupStep3').style.display = 'none';
+        updateStepDots(1);
+        document.getElementById('initialsInput').value = '';
+        document.getElementById('initialsError').style.display = 'none';
         document.getElementById('setupOverlay').classList.remove('hidden');
+        setTimeout(() => document.getElementById('initialsInput').focus(), 100);
+    }
+
+    function updateStepDots(step) {
+        for (let i = 1; i <= 3; i++) {
+            const dot = document.getElementById(`stepDot${i}`);
+            dot.className = 'step-dot' + (i === step ? ' active' : (i < step ? ' done' : ''));
+        }
+    }
+
+    function setupNextStep(step) {
+        const err = document.getElementById('initialsError');
+        err.style.display = 'none';
+
+        // Validate before moving forward
+        if (step === 2 && currentSetupStep === 1) {
+            const init = document.getElementById('initialsInput').value.trim().toUpperCase();
+            if (init.length < 2 || init.length > 3) { showValidationError('Enter 2-3 letter initials'); return; }
+            if (!/^[A-Z]+$/.test(init)) { showValidationError('Letters only'); return; }
+            for (const uid in playersData) { if (playersData[uid].initials === init) { showValidationError(`"${init}" is already taken`); return; } }
+            // Update step 2 subtitle with initials
+            const cost = currentGameConfig?.costPerSquare || 0;
+            document.getElementById('step2Sub').textContent = cost > 0 ? `$${cost} per square. How many do you want, ${init}?` : `How many squares do you want, ${init}?`;
+        }
+
+        if (step === 3 && currentSetupStep === 2) {
+            const count = document.getElementById('boxCountSelect').value;
+            if (!count || count === '') { showToast('Pick how many squares you want'); return; }
+            // Update step 3 subtitle
+            const init = document.getElementById('initialsInput').value.trim().toUpperCase();
+            document.getElementById('step3Sub').textContent = `${init} — ${count} square${count > 1 ? 's' : ''}`;
+        }
+
+        currentSetupStep = step;
+        document.getElementById('setupStep1').style.display = step === 1 ? '' : 'none';
+        document.getElementById('setupStep2').style.display = step === 2 ? '' : 'none';
+        document.getElementById('setupStep3').style.display = step === 3 ? '' : 'none';
+        updateStepDots(step);
+
+        if (step === 1) setTimeout(() => document.getElementById('initialsInput').focus(), 100);
     }
 
     function buildBoxSelect() {
-        const avail=Math.min(10,100-Object.keys(gridData).length); const sel=document.getElementById('boxCountSelect'); sel.innerHTML='';
-        const cost=currentGameConfig?.costPerSquare||0;
-        for(let i=1;i<=Math.max(avail,1);i++){const o=document.createElement('option');o.value=i;o.textContent=cost>0?`${i} box${i>1?'es':''} — $${i*cost}`:`${i} box${i>1?'es':''}`;sel.appendChild(o);}
-        sel.value=Math.min(5,avail); updateCost(); sel.onchange=updateCost;
-        document.getElementById('costHelper').innerHTML=cost>0?`$${cost} per box \u2022 Total: <strong id="costPreview">$${Math.min(5,avail)*cost}</strong>`:'Free pool \u2022 <strong id="costPreview">No cost</strong>';
-        const sub=document.getElementById('setupSub');
-        if(sub) sub.textContent=cost>0?`Pick your initials and how many boxes you want. $${cost} per box.`:'Pick your initials and how many boxes you want.';
+        const avail = Math.min(10, 100 - Object.keys(gridData).length);
+        const sel = document.getElementById('boxCountSelect');
+        sel.innerHTML = '<option value="" disabled selected>Select...</option>';
+        const cost = currentGameConfig?.costPerSquare || 0;
+        for (let i = 1; i <= Math.max(avail, 1); i++) {
+            const o = document.createElement('option');
+            o.value = i;
+            o.textContent = cost > 0 ? `${i} square${i > 1 ? 's' : ''} — $${i * cost}` : `${i} square${i > 1 ? 's' : ''}`;
+            sel.appendChild(o);
+        }
+        sel.onchange = updateCost;
+        document.getElementById('costHelper').innerHTML = cost > 0 ? `$${cost} per square` : 'Free pool — no cost';
     }
-    function updateCost() { const n=parseInt(document.getElementById('boxCountSelect').value)||0; const c=currentGameConfig?.costPerSquare||0; const el=document.getElementById('costPreview'); if(el) el.textContent=c>0?`$${n*c}`:'Free'; }
+
+    function updateCost() {
+        const n = parseInt(document.getElementById('boxCountSelect').value) || 0;
+        const c = currentGameConfig?.costPerSquare || 0;
+        const el = document.getElementById('costHelper');
+        if (el) el.innerHTML = c > 0 ? `$${c} per square • Total: <strong>$${n * c}</strong>` : 'Free pool — no cost';
+    }
 
     function setPickMethod(method) {
-        pickMethod=method; const a=document.getElementById('pickAuto'),m=document.getElementById('pickManual');
-        if(method==='auto'){a.style.background='linear-gradient(135deg,var(--gold),var(--gold-dim))';a.style.color='#1a1a1a';a.style.border='none';m.style.background='var(--bg-tertiary)';m.style.color='var(--text-secondary)';m.style.border='1px solid rgba(255,255,255,0.15)';document.getElementById('claimBtn').textContent='Claim Boxes';}
-        else{m.style.background='linear-gradient(135deg,var(--gold),var(--gold-dim))';m.style.color='#1a1a1a';m.style.border='none';a.style.background='var(--bg-tertiary)';a.style.color='var(--text-secondary)';a.style.border='1px solid rgba(255,255,255,0.15)';document.getElementById('claimBtn').textContent='Pick on Grid \u2192';}
+        pickMethod = method;
+        const a = document.getElementById('pickAuto'), m = document.getElementById('pickManual');
+        if (method === 'auto') {
+            a.classList.add('active'); m.classList.remove('active');
+            document.getElementById('claimBtn').textContent = 'Claim Squares';
+        } else {
+            m.classList.add('active'); a.classList.remove('active');
+            document.getElementById('claimBtn').textContent = 'Pick on Grid →';
+        }
     }
 
     async function claimBoxes() {
-        const init=document.getElementById('initialsInput').value.trim().toUpperCase(); const count=parseInt(document.getElementById('boxCountSelect').value); const err=document.getElementById('initialsError'); err.style.display='none';
-        if(init.length<2||init.length>3){showValidationError('Enter 2-3 letter initials first!');return;} if(!/^[A-Z]+$/.test(init)){showValidationError('Letters only');return;}
-        for(const uid in playersData){if(playersData[uid].initials===init){showValidationError(`"${init}" is taken`);return;}}
-        const avail=[]; for(let r=0;r<10;r++)for(let c=0;c<10;c++){const k=`${r}_${c}`;if(!gridData[k])avail.push(k);} if(avail.length<count){showToast('Not enough boxes!');return;}
-        if(pickMethod==='manual'){manualSelectMode=true;manualInitials=init;manualBoxTarget=count;manualPicks=[];document.getElementById('setupOverlay').classList.add('hidden');switchTab('grid');updateSelectBanner();document.getElementById('selectBanner').classList.remove('hidden');renderGrid();showToast(`Tap ${count} box${count>1?'es':''}`);return;}
-        const picks=[...avail].sort(()=>Math.random()-0.5).slice(0,count); const btn=document.getElementById('claimBtn'); btn.disabled=true; btn.innerHTML='<span class="spinner"></span> Claiming...';
-        try{const up={};up[gRef(`players/${currentUser.uid}`)]={name:currentUser.displayName||currentUser.email,initials:init,boxCount:count,email:currentUser.email};picks.forEach(k=>{up[gRef(`grid/${k}`)]={uid:currentUser.uid,initials:init,name:currentUser.displayName||currentUser.email};});up[`${GAME_REF}/users/${currentUser.uid}/games/${currentGameId}`]=true;await db.ref().update(up);document.getElementById('setupOverlay').classList.add('hidden');document.getElementById('claimPrompt').classList.add('hidden');showToast(`Claimed ${count} box${count>1?'es':''}! \ud83c\udfc8`);}catch(e){showToast('Error: '+e.message);}finally{btn.disabled=false;btn.textContent='Claim Boxes';}
+        const init = document.getElementById('initialsInput').value.trim().toUpperCase();
+        const count = parseInt(document.getElementById('boxCountSelect').value);
+        const err = document.getElementById('initialsError');
+        err.style.display = 'none';
+        if (init.length < 2 || init.length > 3) { setupNextStep(1); showValidationError('Enter 2-3 letter initials first!'); return; }
+        if (!/^[A-Z]+$/.test(init)) { setupNextStep(1); showValidationError('Letters only'); return; }
+        for (const uid in playersData) { if (playersData[uid].initials === init) { setupNextStep(1); showValidationError(`"${init}" is taken`); return; } }
+        const avail = []; for (let r = 0; r < 10; r++) for (let c = 0; c < 10; c++) { const k = `${r}_${c}`; if (!gridData[k]) avail.push(k); }
+        if (avail.length < count) { showToast('Not enough boxes!'); return; }
+        if (pickMethod === 'manual') { manualSelectMode = true; manualInitials = init; manualBoxTarget = count; manualPicks = []; document.getElementById('setupOverlay').classList.add('hidden'); switchTab('grid'); updateSelectBanner(); document.getElementById('selectBanner').classList.remove('hidden'); renderGrid(); showToast(`Tap ${count} square${count > 1 ? 's' : ''}`); return; }
+        // Smart random: spread picks across different rows and columns
+        const picks = smartRandomPick(avail, count);
+        const btn = document.getElementById('claimBtn');
+        btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Claiming...';
+        try {
+            const up = {};
+            up[gRef(`players/${currentUser.uid}`)] = { name: currentUser.displayName || currentUser.email, initials: init, boxCount: count, email: currentUser.email };
+            picks.forEach(k => { up[gRef(`grid/${k}`)] = { uid: currentUser.uid, initials: init, name: currentUser.displayName || currentUser.email }; });
+            up[`${GAME_REF}/users/${currentUser.uid}/games/${currentGameId}`] = true;
+            await db.ref().update(up);
+            document.getElementById('setupOverlay').classList.add('hidden');
+            document.getElementById('claimPrompt').classList.add('hidden');
+            showToast(`Claimed ${count} square${count > 1 ? 's' : ''}! \ud83c\udfc8`);
+        } catch (e) { showToast('Error: ' + e.message); } finally { btn.disabled = false; btn.textContent = 'Claim Squares'; }
+    }
+
+    // Smart random pick: avoids placing multiple squares in the same row or column when possible
+    function smartRandomPick(available, count) {
+        const picks = [];
+        const usedRows = new Set();
+        const usedCols = new Set();
+        let remaining = [...available].sort(() => Math.random() - 0.5);
+
+        for (let i = 0; i < count && remaining.length > 0; i++) {
+            // First: try to find a cell not sharing a row or column with existing picks
+            let bestIdx = -1;
+            for (let j = 0; j < remaining.length; j++) {
+                const [r, c] = remaining[j].split('_').map(Number);
+                if (!usedRows.has(r) && !usedCols.has(c)) { bestIdx = j; break; }
+            }
+            // Second: try to find a cell not sharing at least one axis
+            if (bestIdx === -1) {
+                for (let j = 0; j < remaining.length; j++) {
+                    const [r, c] = remaining[j].split('_').map(Number);
+                    if (!usedRows.has(r) || !usedCols.has(c)) { bestIdx = j; break; }
+                }
+            }
+            // Fallback: just take the first available
+            if (bestIdx === -1) bestIdx = 0;
+
+            const pick = remaining[bestIdx];
+            const [r, c] = pick.split('_').map(Number);
+            picks.push(pick);
+            usedRows.add(r);
+            usedCols.add(c);
+            remaining.splice(bestIdx, 1);
+        }
+        return picks;
     }
 
     // ══════════════════════════════════════════════════
